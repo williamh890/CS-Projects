@@ -563,6 +563,25 @@ int main()
 
     system("Color 0F");
 
+    cout << R"(
+
+
+
+
+
+
+                          __                __ ___  ___
+                         l  | |  | |   |   |    |  |
+                         l__| |  | |   |   |__  |  |__
+                         l  | |  | |   |   |    |     |
+                         l__| |__| |__ |__ |__  |  ___|
+
+                                :SPACE TO PLAY:
+                                       )";
+
+    while(!GetAsyncKeyState(VK_SPACE));
+
+
     while(playAgain)
     {
         bool game_Over = false;
