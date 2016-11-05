@@ -535,6 +535,54 @@ void changeDeaths(vector<struct deathInfo> & deaths)
     }
 }
 
+void printTitle()
+{
+    cout << "\n\n\n" << endl;
+    cout << R"(
+                  _______________________________________________
+                 |                                               |
+                 |       __                   __  ___   ___      |
+                 |      l  |  |  |  |   |    |     |   |         |
+                 |      l__|  |  |  |   |    |__   |   |__       |
+                 |      l  |  |  |  |   |    |     |      |      |
+                 |      l__|  |__|  |__ |__  |__   |   ___|      |
+                 |                                               |
+                 |               : SPACE TO PLAY :               |
+                 |               :  ESC TO QUIT  :               |
+                 |                                               |
+                 |_______________________________________________|
+                                       )";
+    cout << endl << "\t\t\t\t\t";
+}
+void printLose()
+{
+    cout << "\n\n\n" << endl;
+    cout << R"(
+                  _______________________________________________
+                 |                                               |
+                 |                                               |
+                 |           __                __   ___  __      |
+                 |   \   /  |  |  |  |    |   |  | |    |    |   |
+                 |    \ /   |  |  |  |    |   |  | |__  |__  |   |
+                 |     l    |  |  |  |    |   |  |    | |    |   |
+                 |     l    |__|  |__|    |__ |__| ___| |__  .   |
+                 |                                               |
+                 |   ------------------------------------------  |
+                 |                                               |
+                 |_______________________________________________|
+
+
+               )";
+}
+bool playerSelection()
+{
+    while(true)
+    {
+        if(GetAsyncKeyState(VK_SPACE))  return true;
+        if(GetAsyncKeyState(VK_ESCAPE)) return false;
+    };
+}
+
 int main()
 {
     vector<vector<entity> > bounds(YMAX, vector<entity>(XMAX));
@@ -561,29 +609,15 @@ int main()
 
     srand(time(nullptr));
 
-    system("Color 0F");
-
-    cout << R"(
-
-
-
-
-
-
-                          __                __ ___  ___
-                         l  | |  | |   |   |    |  |
-                         l__| |  | |   |   |__  |  |__
-                         l  | |  | |   |   |    |     |
-                         l__| |__| |__ |__ |__  |  ___|
-
-                                :SPACE TO PLAY:
-                                       )";
-
-    while(!GetAsyncKeyState(VK_SPACE));
-
+    system("Color F0");
 
     while(playAgain)
     {
+        printTitle();
+        playAgain = playerSelection();
+        if(playAgain == false) break;
+
+        system("Color 0F");
         bool game_Over = false;
         int level = 1;
         bullets.clear();
@@ -670,10 +704,19 @@ int main()
                 system("cls");
 
             }
-            if(game_Over) break;
+            if(game_Over)
+            {
+
+                printLose();
+                system("Color 0C");
+                Sleep(2000);
+                system("cls");
+                system("Color F0");
+                break;
+            }
 
             level++;
-
         }
     }
+
 }
