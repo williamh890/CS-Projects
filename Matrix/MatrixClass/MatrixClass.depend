@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1478550772 source:c:\users\wbhorn\desktop\new folder\bullets\wbhorn\matrix\matrixclass\main.cpp
+	<iostream>
+	"include\Matrix.h"
+
+1478550540 source:c:\users\wbhorn\desktop\new folder\bullets\wbhorn\matrix\matrixclass\src\matrix.cpp
+
+1478550778 c:\users\wbhorn\desktop\new folder\bullets\wbhorn\matrix\matrixclass\include\matrix.h
+	<vector>
+	<iostream>
+	"Matrix.h"
+
