@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <iostream>
-#include "Matrix.h"
+
 
 template <typename T>
 class Matrix
@@ -20,7 +20,7 @@ class Matrix
 
         ~Matrix();
         //Operations
-        Matrix operator+(const Matrix& b);
+        Matrix& operator+(const Matrix& b);
 
         //Display
         void print();
@@ -57,9 +57,18 @@ Matrix<T>::Matrix(std::vector<std::vector<T> > data) : matrixVals(data)
     col = (int)matrixVals.size();
 }
 
-Matrix operator+(const Matrix& b)
+template <typename T>
+Matrix<T>& Matrix<T>::operator+(const Matrix & b)
 {
-
+    Matrix matrixSum(this->row, this->col);
+    for(int r = 0; r < this->row; ++r)
+    {
+        for(int c = 0; c < this->col; ++c)
+        {
+            matrixSum.matrixVals[r][c] = this->matrixVals[r][c] + b.matrixVals[r][c];
+        }
+    }
+    return matrixSum;
 }
 
 template <typename T>

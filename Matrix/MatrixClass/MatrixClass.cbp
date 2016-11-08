@@ -36,7 +36,6 @@
 		</Compiler>
 		<Unit filename="include/Matrix.h" />
 		<Unit filename="main.cpp" />
-		<Unit filename="src/Matrix.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

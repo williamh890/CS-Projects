@@ -33,6 +33,18 @@
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Unit filename="ArrayBasedBounds.cpp" />
+		<Unit filename="GAME_SETTINGS.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="entityEnum.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="playerInfo.cpp">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="playerInfo.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="readLevel.cpp" />
 		<Unit filename="readLevel.h">
 			<Option target="&lt;{~None~}&gt;" />

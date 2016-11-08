@@ -1,7 +1,6 @@
 //ArrayBasedBounds.cpp
 //William Horn
 //10.31.2016
-
 #include <iostream>
 using std::cout;
 using std::cin;
@@ -14,91 +13,13 @@ using std::string;
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+
 #include "readLevel.h"
+#include "entityEnum.h"
+#include "GAME_SETTINGS.h"
+#include "playerInfo.h"
 
-#define XMAX 80
-#define YMAX 25
 
-#define SHOT_DELAY 16
-#define PLAYER_SPEED 4
-//Delay enemies movements
-#define ENEMY_SPEED 3
-#define ENEMY_SPEED_DIF 2
-#define ENEMY_REACTION_TIME 10
-#define DECTECTION_RANGE 25
-#define START_DEATH_STAGE 3
-#define DEATH_SPEED 16
-
-#define BUFFER 5
-
-#define LEVEL_MOD 6
-#define LEVELS_TO_WIN 3
-
-#define REFRESH 30
-
-enum entity
-{
-    enemy,
-    character,
-    wall,
-    destructableWall,
-    bullet,
-    space,
-    death
-};
-
-vector<vector<int >> makePrePositions(int x, int y)
-{
-    vector<vector<int >> prevPositions;
-    for(int i = 0; i < ENEMY_REACTION_TIME; ++i)
-    {
-        vector<int> currentPos {x, y};
-        prevPositions.push_back(currentPos);
-    }
-    return prevPositions;
-}
-
-struct playerInfo
-{
-    int xPos = XMAX / 2;
-    int yPos = YMAX / 2;
-    char model = '@';
-    vector<vector<int> > prevPositions;
-    //Stop Character From going out through walls
-
-    playerInfo() : prevPositions(makePrePositions(XMAX / 2, YMAX / 2)){}
-
-    bool legalUp(vector<vector<entity>> & bounds)
-    {
-        return (bounds[yPos - 1][xPos] != wall);
-    }
-    bool legalDown(vector<vector<entity>> & bounds)
-    {
-        return (bounds[yPos + 1][xPos] != wall);
-    }
-    bool legalLeft(vector<vector<entity>> & bounds)
-    {
-        return (bounds[yPos][xPos - 1] != wall);
-    }
-    bool legalRight(vector<vector<entity>> & bounds)
-    {
-        return (bounds[yPos][xPos + 1] != wall);
-    }
-
-    void movePlayer(vector<vector<entity>> bounds)
-    {
-    int U = GetAsyncKeyState(0x57); //W virtual key code
-    int D = GetAsyncKeyState(0x53); //S virtual key code
-    int L = GetAsyncKeyState(0x41); //A virtual key code
-    int R = GetAsyncKeyState(0x44); //D virtual key code
-
-    if(U != 0 && legalUp(bounds))     this-> yPos-=1;
-    if(D != 0 && legalDown(bounds))   this-> yPos+=1;
-
-    if(L != 0 && legalLeft(bounds))   this-> xPos-=1;
-    if(R != 0 && legalRight(bounds))  this-> xPos+=1;
-    }
-};
 
 bool legalPosition(vector<vector<entity>> bounds, int xPos, int yPos)
 {
@@ -121,7 +42,7 @@ struct enemyInfo
     {
         speedMod = rand() % 2 + 1;
         vision = (5 - rand() % 10) + DECTECTION_RANGE;
-        fastReaction = (bool)rand % 3;
+        fastReaction = (bool) rand % 3;
     }
 
 
@@ -277,9 +198,9 @@ void generateLevel(vector<vector<entity >> & bounds,
                    vector<struct deathInfo> deaths,
                    bool initial)
 {
-    for(int y = 0; y < bounds.size(); y++)
+    for(int y = 0; y < (int)bounds.size(); y++)
     {
-        for(int x = 0; x < bounds[y].size(); x++)
+        for(int x = 0; x < (int)bounds[y].size(); x++)
         {
             int charsPrinted = 0;
 
@@ -293,7 +214,7 @@ void generateLevel(vector<vector<entity >> & bounds,
                 bounds[y][x] = character;
                 continue;
             }
-            for(int bulletIndex = 0; bulletIndex < bullets.size(); ++bulletIndex)
+            for(int bulletIndex = 0; bulletIndex < (int)bullets.size(); ++bulletIndex)
             {
                 if(bullets[bulletIndex].xPos == x && bullets[bulletIndex].yPos == y)
                 {
@@ -302,7 +223,7 @@ void generateLevel(vector<vector<entity >> & bounds,
                     break;
                 }
             }
-            for(int deathNum = 0; deathNum < deaths.size(); ++deathNum)
+            for(int deathNum = 0; deathNum < (int)deaths.size(); ++deathNum)
             {
                 if(deaths[deathNum].xPos == x && deaths[deathNum].yPos == y)
                 {
@@ -313,7 +234,7 @@ void generateLevel(vector<vector<entity >> & bounds,
             }
             if(charsPrinted) continue;
 
-            for(int enemyIndex = 0; enemyIndex < enemies.size(); ++enemyIndex)
+            for(int enemyIndex = 0; enemyIndex < (int)enemies.size(); ++enemyIndex)
             {
                 if(enemies[enemyIndex].xPos == x && enemies[enemyIndex].yPos == y)
                 {
@@ -351,7 +272,7 @@ void draw(vector<vector<entity>> bounds, playerInfo player,
                 }
                 if(bounds[y][x] == bullet)
                 {
-                    for(int i = 0; i < bullets.size(); ++i)
+                    for(int i = 0; i < (int)bullets.size(); ++i)
                     {
                         if(bullets[i].xPos == x  && bullets[i].yPos == y)
                             render += bullets[i].model;
@@ -359,7 +280,7 @@ void draw(vector<vector<entity>> bounds, playerInfo player,
                 }
                 if(bounds[y][x] == death)
                 {
-                    for(int deathNum = 0; deathNum < deaths.size(); ++deathNum)
+                    for(int deathNum = 0; deathNum < (int)deaths.size(); ++deathNum)
                     {
                         if(deaths[deathNum].xPos == x && deaths[deathNum].yPos == y)
                         {
@@ -372,7 +293,7 @@ void draw(vector<vector<entity>> bounds, playerInfo player,
                     render += (char)237;
                 }
             }
-            if(y != bounds.size() - 1) render += '\n';
+            if(y != (int)bounds.size() - 1) render += '\n';
         }
         cout << render;
 }
@@ -392,7 +313,7 @@ bool keyCheck(int U, int D,
 void moveBullets(vector<struct bulletInfo> & bullets,
                  vector<vector<entity >> bounds)
 {
-    for(int bulletIndex = 0; bulletIndex < bullets.size(); ++bulletIndex)
+    for(int bulletIndex = 0; bulletIndex < (int)bullets.size(); ++bulletIndex)
     {
         bullets[bulletIndex].moveBullet();
 
@@ -428,7 +349,7 @@ void moveEnemies(vector<struct enemyInfo> & enemies,
                  playerInfo player,
                  vector<vector<entity >> bounds)
 {
-    for(int i = 0; i < enemies.size(); ++i)
+    for(int i = 0; i < (int)enemies.size(); ++i)
     {
         if(enemies[i].speedCounter >= ENEMY_SPEED_DIF)
         {
@@ -444,9 +365,9 @@ void uniqueEnemyPosition(vector<struct enemyInfo> & enemies,
 {
     bool areUnique = true;
 
-    for(int check = 0; check < enemies.size(); ++check)
+    for(int check = 0; check < (int)enemies.size(); ++check)
     {
-        for(int curr = 0; curr < enemies.size(); ++curr)
+        for(int curr = 0; curr < (int)enemies.size(); ++curr)
         {
             if(check == curr) continue;
 
@@ -534,7 +455,7 @@ void generateEnemies(int level,
 
 void changeDeaths(vector<struct deathInfo> & deaths)
 {
-    for(int i = 0; i < deaths.size(); ++i)
+    for(int i = 0; i < (int)deaths.size(); ++i)
     {
         switch(deaths[i].stage)
         {
@@ -592,11 +513,14 @@ void printLose()
                  |                                               |
                  |_______________________________________________|
                                         )";
+                system("Color 0C");
+                Sleep(2000);
+                system("cls");
+                system("Color F0");
 }
-
 void printWin()
 {
-
+    system("cls");
     cout << "\n\n\n" << endl;
     cout << R"(
                   _______________________________________________
@@ -612,7 +536,10 @@ void printWin()
                  |                                               |
                  |_______________________________________________|
                                         )";
-
+                system("Color 2F");
+                Sleep(3000);
+                system("cls");
+                system("Color F0");
 }
 bool playerSelection()
 {
@@ -629,7 +556,9 @@ int main()
 
     vector<struct bulletInfo> bullets;
 
-    playerInfo player;
+    vector<vector<int> > prevIn {{1,2},{1,2}};
+
+    playerInfo player(prevIn);
 
     vector<struct enemyInfo> enemies;
 
@@ -662,20 +591,17 @@ int main()
         int level = 1;
         bullets.clear();
         enemies.clear();
+        deaths.clear();
         player = {};
 
         while(true)
         {
-            system("cls");
-            system("Color F0");
-            cout << readLevel(level) << "\n\t\t\t\t\t";
-            Sleep(1000);
-            system("Color 0F");
-            system("cls");
+
+            printLevel(level);
 
             generateLevel(bounds, player, bullets, enemies, deaths, true);
             generateEnemies(level, enemies, bounds);
-            int score = 0;
+
             player.xPos = XMAX / 2;
             player.yPos = YMAX / 2;
             bullets.clear();
@@ -700,7 +626,6 @@ int main()
                         playerMoveRate = 0;
                     }
                 }
-
                 if(playerMoved) playerMoveRate++;
                 if(playerMoveRate == PLAYER_SPEED)
                 {
@@ -742,8 +667,9 @@ int main()
                 vector<int> currentPos {player.xPos, player.yPos};
                 player.prevPositions.push_back(currentPos);
                 player.prevPositions.erase(player.prevPositions.begin());
-
+                //If all enemies are killed, move to the next level
                 if(enemies.size() == 0) break;
+
                 ++deathAnimationRate;
                 ++enemyMoveRate;
                 Sleep(REFRESH);
@@ -752,20 +678,11 @@ int main()
             if(game_Over)
             {
                 printLose();
-                system("Color 0C");
-                Sleep(2000);
-                system("cls");
-                system("Color F0");
                 break;
             }
             if(level == LEVELS_TO_WIN)
             {
-                system("cls");
                 printWin();
-                system("Color 2F");
-                Sleep(3000);
-                system("cls");
-                system("Color F0");
                 break;
             }
             level++;

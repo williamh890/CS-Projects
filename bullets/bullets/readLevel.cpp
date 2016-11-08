@@ -5,9 +5,8 @@ using std::endl;
 using std::string;
 #include <fstream>
 using std::ifstream;
+#include <windows.h>
 #include "readLevel.h"
-
-
 
 string readLevel(int num)
 {
@@ -62,5 +61,15 @@ string readLevel(int num)
     else cout << "Unable to open file";
 
     return currLevel;
+}
+
+void printLevel(int level)
+{
+    system("cls");
+    system("Color F0");
+    cout << readLevel(level) << "\n\t\t\t\t\t";
+    Sleep(1000);
+    system("Color 0F");
+    system("cls");
 }
 
