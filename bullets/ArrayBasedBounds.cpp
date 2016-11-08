@@ -13,88 +13,18 @@ using std::string;
 #include <Windows.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
-#define XMAX 80
-#define YMAX 25
-
-#define SHOT_DELAY 14
-#define PLAYER_SPEED 4
-
-//Delay enemies movements
-#define ENEMY_SPEED 7
-#define ENEMY_REACTION_TIME 10
-#define START_DEATH_STAGE 3
-#define DEATH_SPEED 16
-
-#define BUFFER 5
-
-#define LEVEL_MOD 3
-
-#define REFRESH 30
-
-enum entity
-{
-    enemy,
-    character,
-    wall,
-    destructableWall,
-    bullet,
-    space,
-    death
-};
+#include "Headers/readLevel.h"
+#include "Headers/Game_Settings.h"
+#include "Headers/playerInfo.h"
 
 vector<vector<int >> makePrePositions(int x, int y)
 {
     vector<vector<int >> prevPositions;
-    for(int i = 0; i < ENEMY_REACTION_TIME; ++i)
-    {
-        vector<int> currentPos {x, y};
-        prevPositions.push_back(currentPos);
-    }
+
     return prevPositions;
 }
-
-struct playerInfo
-{
-    int xPos = XMAX / 2;
-    int yPos = YMAX / 2;
-    char model = '@';
-    vector<vector<int> > prevPositions;
-    //Stop Character From going out through walls
-
-    playerInfo() : prevPositions(makePrePositions(XMAX / 2, YMAX / 2)){}
-
-    bool legalUp(vector<vector<entity>> & bounds)
-    {
-        return (bounds[yPos - 1][xPos] != wall);
-    }
-    bool legalDown(vector<vector<entity>> & bounds)
-    {
-        return (bounds[yPos + 1][xPos] != wall);
-    }
-    bool legalLeft(vector<vector<entity>> & bounds)
-    {
-        return (bounds[yPos][xPos - 1] != wall);
-    }
-    bool legalRight(vector<vector<entity>> & bounds)
-    {
-        return (bounds[yPos][xPos + 1] != wall);
-    }
-
-    void movePlayer(vector<vector<entity>> bounds)
-    {
-    int U = GetAsyncKeyState(0x57); //W virtual key code
-    int D = GetAsyncKeyState(0x53); //S virtual key code
-    int L = GetAsyncKeyState(0x41); //A virtual key code
-    int R = GetAsyncKeyState(0x44); //D virtual key code
-
-    if(U != 0 && legalUp(bounds))     this-> yPos-=1;
-    if(D != 0 && legalDown(bounds))   this-> yPos+=1;
-
-    if(L != 0 && legalLeft(bounds))   this-> xPos-=1;
-    if(R != 0 && legalRight(bounds))  this-> xPos+=1;
-    }
-};
 
 bool legalPosition(vector<vector<entity>> bounds, int xPos, int yPos)
 {
@@ -105,12 +35,20 @@ struct enemyInfo
 {
     int xPos; //current x position of the enemy
     int yPos; //current #define XMAX 80
-    bool fastReaction = (bool)rand % 3;
+    bool fastReaction;
+    int vision;
+    int speedMod;
+    int speedCounter = 3;
 
     vector<int> currentDirection {0,0}; //{X_movement, Y_movement}
 
     enemyInfo(){}
-    enemyInfo(int x, int y) : xPos(x), yPos(y){}
+    enemyInfo(int x, int y) : xPos(x), yPos(y)
+    {
+        speedMod = rand() % 2 + 1;
+        vision = (5 - rand() % 10) + DECTECTION_RANGE;
+        fastReaction = (bool)rand() % 3;
+    }
 
 
     void moveEnemy(playerInfo player, vector<vector<entity> > bounds)
@@ -119,20 +57,30 @@ struct enemyInfo
         int tempX = this->xPos;
         int tempY = this->yPos;
         int reaction;
+        int playerDist = sqrt(pow(player.xPos - this->xPos, 2) + pow(player.yPos - this->yPos, 2));
 
-        if(fastReaction) reaction = ENEMY_REACTION_TIME / 3;
-        else reaction = 0;
+        if(playerDist > vision)
+        {
+            //Random movement
+            currentDirection[0] =  1 - (rand() % 3);
+            currentDirection[1] =  1 - (rand() % 3);
+        }
+        else
+        {
+            if(fastReaction) reaction = ENEMY_REACTION_TIME / 3;
 
-        //Changes the x direction to move toward the player
-        if     (xPos < player.prevPositions[reaction][0]) currentDirection[0] =  1;
-        else if(xPos > player.prevPositions[reaction][0]) currentDirection[0] = -1;
-        else                                              currentDirection[0] =  1 - (rand() % 3);
-        //Changes the y direction to move toward the player
-        if     (yPos < player.prevPositions[reaction][1]) currentDirection[1] =  1;
-        else if(yPos > player.prevPositions[reaction][1]) currentDirection[1] = -1;
-        else                                              currentDirection[1] =  1 - (rand() % 3);
-        //If the direction before the changes == direction after the changes
+            else reaction = 0;
 
+            //Changes the x direction to move toward the player
+            if     (xPos < player.prevPositions[reaction][0]) currentDirection[0] =  1;
+            else if(xPos > player.prevPositions[reaction][0]) currentDirection[0] = -1;
+            else                                              currentDirection[0] =  1 - (rand() % 3);
+            //Changes the y direction to move toward the player
+            if     (yPos < player.prevPositions[reaction][1]) currentDirection[1] =  1;
+            else if(yPos > player.prevPositions[reaction][1]) currentDirection[1] = -1;
+            else                                              currentDirection[1] =  1 - (rand() % 3);
+            //If the direction before the changes == direction after the changes
+        }
         //Otherwise move the enemy closer to the player
         xPos += currentDirection[0];
         yPos += currentDirection[1];
@@ -189,8 +137,6 @@ struct bulletInfo
 
     void moveBullet()
     {
-
-
         if(trajectory[up] != 0)    this->yPos--;
         if(trajectory[down] != 0)  this->yPos++;
 
@@ -257,11 +203,9 @@ void generateLevel(vector<vector<entity >> & bounds,
                    vector<struct deathInfo> deaths,
                    bool initial)
 {
-    #pragma omp parallel for
-    for(int y = 0; y < bounds.size(); y++)
+    for(int y = 0; y < (int)bounds.size(); y++)
     {
-        //#pragma omp parallel for
-        for(int x = 0; x < bounds[y].size(); x++)
+        for(int x = 0; x < (int)bounds[y].size(); x++)
         {
             int charsPrinted = 0;
 
@@ -275,7 +219,7 @@ void generateLevel(vector<vector<entity >> & bounds,
                 bounds[y][x] = character;
                 continue;
             }
-            for(int bulletIndex = 0; bulletIndex < bullets.size(); ++bulletIndex)
+            for(int bulletIndex = 0; bulletIndex < (int)bullets.size(); ++bulletIndex)
             {
                 if(bullets[bulletIndex].xPos == x && bullets[bulletIndex].yPos == y)
                 {
@@ -284,7 +228,7 @@ void generateLevel(vector<vector<entity >> & bounds,
                     break;
                 }
             }
-            for(int deathNum = 0; deathNum < deaths.size(); ++deathNum)
+            for(int deathNum = 0; deathNum < (int)deaths.size(); ++deathNum)
             {
                 if(deaths[deathNum].xPos == x && deaths[deathNum].yPos == y)
                 {
@@ -295,7 +239,7 @@ void generateLevel(vector<vector<entity >> & bounds,
             }
             if(charsPrinted) continue;
 
-            for(int enemyIndex = 0; enemyIndex < enemies.size(); ++enemyIndex)
+            for(int enemyIndex = 0; enemyIndex < (int)enemies.size(); ++enemyIndex)
             {
                 if(enemies[enemyIndex].xPos == x && enemies[enemyIndex].yPos == y)
                 {
@@ -333,7 +277,7 @@ void draw(vector<vector<entity>> bounds, playerInfo player,
                 }
                 if(bounds[y][x] == bullet)
                 {
-                    for(int i = 0; i < bullets.size(); ++i)
+                    for(int i = 0; i < (int)bullets.size(); ++i)
                     {
                         if(bullets[i].xPos == x  && bullets[i].yPos == y)
                             render += bullets[i].model;
@@ -341,7 +285,7 @@ void draw(vector<vector<entity>> bounds, playerInfo player,
                 }
                 if(bounds[y][x] == death)
                 {
-                    for(int deathNum = 0; deathNum < deaths.size(); ++deathNum)
+                    for(int deathNum = 0; deathNum < (int)deaths.size(); ++deathNum)
                     {
                         if(deaths[deathNum].xPos == x && deaths[deathNum].yPos == y)
                         {
@@ -354,7 +298,7 @@ void draw(vector<vector<entity>> bounds, playerInfo player,
                     render += (char)237;
                 }
             }
-            if(y != bounds.size() - 1) render += '\n';
+            if(y != (int)bounds.size() - 1) render += '\n';
         }
         cout << render;
 }
@@ -374,8 +318,7 @@ bool keyCheck(int U, int D,
 void moveBullets(vector<struct bulletInfo> & bullets,
                  vector<vector<entity >> bounds)
 {
-    #pragma omp parallel for
-    for(int bulletIndex = 0; bulletIndex < bullets.size(); ++bulletIndex)
+    for(int bulletIndex = 0; bulletIndex < (int)bullets.size(); ++bulletIndex)
     {
         bullets[bulletIndex].moveBullet();
 
@@ -411,9 +354,14 @@ void moveEnemies(vector<struct enemyInfo> & enemies,
                  playerInfo player,
                  vector<vector<entity >> bounds)
 {
-    for(int i = 0; i < enemies.size(); ++i)
+    for(int i = 0; i < (int)enemies.size(); ++i)
     {
-        enemies[i].moveEnemy(player, bounds);
+        if(enemies[i].speedCounter >= ENEMY_SPEED_DIF)
+        {
+            enemies[i].moveEnemy(player, bounds);
+            enemies[i].speedCounter = 0;
+        }
+        else enemies[i].speedCounter += enemies[i].speedMod;
     }
 }
 
@@ -422,9 +370,9 @@ void uniqueEnemyPosition(vector<struct enemyInfo> & enemies,
 {
     bool areUnique = true;
 
-    for(int check = 0; check < enemies.size(); ++check)
+    for(int check = 0; check < (int)enemies.size(); ++check)
     {
-        for(int curr = 0; curr < enemies.size(); ++curr)
+        for(int curr = 0; curr < (int)enemies.size(); ++curr)
         {
             if(check == curr) continue;
 
@@ -473,7 +421,6 @@ void hitDetection(vector<struct enemyInfo> & enemies,
 
         for(int bulletIndex = 0; bulletIndex < (int)bullets.size(); bulletIndex++)
         {
-
             //If any bullets position is == to any enemies position
             if((bullets[bulletIndex].xPos == enemies[enemyIndex].xPos) &&
                (bullets[bulletIndex].yPos == enemies[enemyIndex].yPos))
@@ -508,13 +455,12 @@ void generateEnemies(int level,
                 break;
             }
         }
-
     }
 }
 
 void changeDeaths(vector<struct deathInfo> & deaths)
 {
-    for(int i = 0; i < deaths.size(); ++i)
+    for(int i = 0; i < (int)deaths.size(); ++i)
     {
         switch(deaths[i].stage)
         {
@@ -533,46 +479,6 @@ void changeDeaths(vector<struct deathInfo> & deaths)
         }
         deaths[i].stage--;
     }
-}
-
-void printTitle()
-{
-    cout << "\n\n\n" << endl;
-    cout << R"(
-                  _______________________________________________
-                 |                                               |
-                 |       __                   __  ___   ___      |
-                 |      l  |  |  |  |   |    |     |   |         |
-                 |      l__|  |  |  |   |    |__   |   |__       |
-                 |      l  |  |  |  |   |    |     |      |      |
-                 |      l__|  |__|  |__ |__  |__   |   ___|      |
-                 |                                               |
-                 |               : SPACE TO PLAY :               |
-                 |               :  ESC TO QUIT  :               |
-                 |                                               |
-                 |_______________________________________________|
-                                       )";
-    cout << endl << "\t\t\t\t\t";
-}
-void printLose()
-{
-    cout << "\n\n\n" << endl;
-    cout << R"(
-                  _______________________________________________
-                 |                                               |
-                 |                                               |
-                 |           __                __   ___  __      |
-                 |   \   /  |  |  |  |    |   |  | |    |    |   |
-                 |    \ /   |  |  |  |    |   |  | |__  |__  |   |
-                 |     l    |  |  |  |    |   |  |    | |    |   |
-                 |     l    |__|  |__|    |__ |__| ___| |__  .   |
-                 |                                               |
-                 |   ------------------------------------------  |
-                 |                                               |
-                 |_______________________________________________|
-
-
-               )";
 }
 bool playerSelection()
 {
@@ -605,7 +511,6 @@ int main()
     int deathAnimationRate = DEATH_SPEED;
 
     bool playAgain = true;
-    bool game_Over = false;
 
     srand(time(nullptr));
 
@@ -626,9 +531,16 @@ int main()
 
         while(true)
         {
+            system("cls");
+            system("Color F0");
+            cout << readLevel(level) << "\n\t\t\t\t\t";
+            Sleep(1000);
+            system("Color 0F");
+            system("cls");
+
             generateLevel(bounds, player, bullets, enemies, deaths, true);
             generateEnemies(level, enemies, bounds);
-            int score = 0;
+
             player.xPos = XMAX / 2;
             player.yPos = YMAX / 2;
             bullets.clear();
@@ -677,7 +589,6 @@ int main()
                 }
                 if(bulletFired) fireRate++;
 
-
                 moveBullets(bullets, bounds);
                 ////////////////////////////////////
 
@@ -702,11 +613,9 @@ int main()
                 ++enemyMoveRate;
                 Sleep(REFRESH);
                 system("cls");
-
             }
             if(game_Over)
             {
-
                 printLose();
                 system("Color 0C");
                 Sleep(2000);
@@ -714,9 +623,17 @@ int main()
                 system("Color F0");
                 break;
             }
-
+            if(level == LEVELS_TO_WIN)
+            {
+                system("cls");
+                printWin();
+                system("Color 2F");
+                Sleep(3000);
+                system("cls");
+                system("Color F0");
+                break;
+            }
             level++;
         }
     }
-
 }
