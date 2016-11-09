@@ -13,5 +13,9 @@ int main()
 
     result = first * second;
 
+    result.print();
+
+    first.resize(2,2);
+
     return 0;
 }

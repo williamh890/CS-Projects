@@ -1,14 +1,14 @@
 # depslib dependency file v1.0
-1478550772 source:c:\users\wbhorn\desktop\new folder\bullets\wbhorn\matrix\matrixclass\main.cpp
+1478720550 source:c:\users\wbhorn\desktop\new folder\bullets\wbhorn\matrix\matrixclass\main.cpp
 	<iostream>
 	"include\Matrix.h"
 
 1478550540 source:c:\users\wbhorn\desktop\new folder\bullets\wbhorn\matrix\matrixclass\src\matrix.cpp
 
-1478550778 c:\users\wbhorn\desktop\new folder\bullets\wbhorn\matrix\matrixclass\include\matrix.h
+1478720517 c:\users\wbhorn\desktop\new folder\bullets\wbhorn\matrix\matrixclass\include\matrix.h
 	<vector>
 	<iostream>
-	"Matrix.h"
+	<cassert>
 
 1478563893 source:c:\users\william\desktop\spring 2016\cs 201\project\wbhorn\wbhorn\matrix\matrixclass\main.cpp
 	<iostream>

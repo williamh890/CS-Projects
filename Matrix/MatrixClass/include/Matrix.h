@@ -19,14 +19,17 @@ class Matrix
 
         ~Matrix();
         //Operations
-        Matrix& operator+=(const Matrix& b);
-        template <typename S>
-        Matrix& operator*=(S scalar);
-        Matrix<T>& operator*(Matrix<T> & B);
+        std::vector<T> operator[](size_t i);
+        Matrix& operator+=(const Matrix & b);
+        Matrix& operator-=(const Matrix & b);
+        Matrix& operator*=(T scalar);
+        Matrix<T>& operator*=(Matrix<T> & B);
+
+
 
         void resize(int newRowSize, int newColSize, T fillvalue = 0);
         //Display
-        inline at(int row, int col);
+        inline T at(int row, int col);
         void print();
 
     protected:
@@ -54,6 +57,11 @@ Matrix<T>::Matrix(std::vector<std::vector<T> > data) : matrixVals(data)
 
 
 /////////////////////////////OPERATORS////////////////////////
+template <typename T>
+std::vector<T> Matrix<T>::operator[](size_t i)
+{
+    return matrixVals[i];
+}
 
 template <typename T>
 Matrix<T>& Matrix<T>::operator+=(const Matrix & b)
@@ -69,33 +77,45 @@ Matrix<T>& Matrix<T>::operator+=(const Matrix & b)
 }
 
 template <typename T>
+Matrix<T>& Matrix<T>::operator-=(const Matrix & b)
+{
+    for(int r = 0; r < this->row; ++r)
+    {
+        for(int c = 0; c < this->col; ++c)
+        {
+            this->matrixVals[r][c] -= b.matrixVals[r][c];
+        }
+    }
+    return *this;
+}
+
+template <typename T>
 Matrix<T>& operator+(Matrix<T> a, const Matrix<T> & b)
 {
     return (a+=b);
 }
 
 template <typename T>
-template <typename S>
-Matrix<T>& Matrix<T>::operator*=(S scalar)
+Matrix<T>& Matrix<T>::operator*=(T scalar)
 {
     for(int r = 0; r < this->row; ++r)
     {
         for(int c = 0; c < this->col; ++c)
         {
-            this->matrixVals[r][c] *= (T)scalar;
+            this->matrixVals[r][c] *= scalar;
         }
     }
     return *this;
 }
 
-template <typename T, typename S>
-Matrix<T>& operator*(Matrix<T> a, S scalar)
+template <typename T>
+Matrix<T>& operator*(Matrix<T> a, T scalar)
 {
-    return (a*=(T)scalar);
+    return (a*=scalar);
 }
 
 template <typename T>
-Matrix<T>& Matrix<T>::operator*(Matrix<T> & B)
+Matrix<T>& Matrix<T>::operator*=(Matrix<T> & B)
 {
     assert(this->col == B.row);
     //Matrix multiplication A*B
@@ -117,11 +137,18 @@ Matrix<T>& Matrix<T>::operator*(Matrix<T> & B)
             }
             multResult.matrixVals[r][c] = slot;
         }
-
     }
-    multResult.print();
+    //Copies the data from the temp matrix into the this matrix
+    //Only way to return without getting std::bad_alloc
+    (*this).matrixVals.swap(multResult.matrixVals);
 
-    return multResult;
+    return *this;
+}
+
+template <typename T>
+Matrix<T>& operator*(Matrix<T> a, Matrix<T> b)
+{
+    return (a*=b);
 }
 
 
@@ -141,7 +168,6 @@ void Matrix<T>::resize(int newNumRows, int newNumCols, T fillValue)
         {
             r.insert(r.end(), (newNumCols - this->col), fillValue);
         }
-
     }
     if(newNumCols < this->col)
     {
@@ -152,16 +178,18 @@ void Matrix<T>::resize(int newNumRows, int newNumCols, T fillValue)
             r.resize(newNumCols);
         }
     }
-
     if(newNumRows > this->row)
     {
+        //Makes new rows and fills them with a desired value
         std::vector<T> newRows(newNumCols, fillValue);
         this->matrixVals.insert(matrixVals.end(), (newNumRows - this->row), newRows);
     }
     if(newNumRows < this->row)
     {
-
+        //Resize the matrix, deletes rows to make space
+        this->matrixVals.resize(newNumRows);
     }
+    //Sets the number of col and rows to there new values
     this->col = newNumCols;
     this->row = newNumRows;
 }
@@ -182,12 +210,6 @@ void Matrix<T>::print()
         std::cout << std::endl;
     }
     std::cout << std::endl;
-}
-
-template <typename T>
-inline Matrix<T>::at(int row, int col)
-{
-    return this->matrixVals[row][col];
 }
 
 template <typename T>
