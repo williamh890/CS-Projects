@@ -20,12 +20,13 @@
 
 1478563341 source:c:\users\william\desktop\spring 2016\cs 201\project\wbhorn\wbhorn\matrix\matrixclass\src\matrix.cpp
 
-1478670378 source:c:\users\william\desktop\spring 2016\cs 201\project\wbhorn\matrix\matrixclass\main.cpp
+1478778427 source:c:\users\william\desktop\spring 2016\cs 201\project\wbhorn\matrix\matrixclass\main.cpp
 	<iostream>
 	"include\Matrix.h"
 
-1478671658 c:\users\william\desktop\spring 2016\cs 201\project\wbhorn\matrix\matrixclass\include\matrix.h
+1478779044 c:\users\william\desktop\spring 2016\cs 201\project\wbhorn\matrix\matrixclass\include\matrix.h
 	<vector>
 	<iostream>
 	<cassert>
+	<stdlib.h>
 
