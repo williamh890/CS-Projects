@@ -9,32 +9,39 @@
 template <typename T>
 class Matrix
 {
-
-
     public:
         std::vector<std::vector<T> > matrixVals;
         int row;
         int col;
-        //Zero by default
+        ////////////////CTORS//////////////
         Matrix(int r = 0, int c = 0, T val = 0);
         Matrix(std::vector<std::vector<T> > data);
 
         ~Matrix();
-        //Operations
+        //////////////Operations/////////////
         std::vector<T> operator[](size_t i);
         Matrix& operator+=(const Matrix & b);
         Matrix& operator-=(const Matrix & b);
         Matrix& operator*=(T scalar);
         Matrix<T>& operator*=(Matrix<T> & B);
 
-
+        ///////////////////Utility//////////////////
         void resize(int newRowSize, int newColSize, T fillvalue = 0);
-        //Display
+        //Adding Row/Rows
+        void addRow(std::vector<T> row);
+        void addRows(std::vector<T> row);
+        template<typename...Rs>
+        void addRows(std::vector<T> row, Rs...rows);
+        //Adding Col/Cols
+        void addCol(std::vector<T> col);
+        void addCols(std::vector<T> col);
+        template<typename ...Cs>
+        void addCols(std::vector<T> col, Cs...cols);
+        ////////////////////////////////////////////
+
+        ////////////////Display/////////////////
         void print();
 
-    protected:
-
-    private:
 };
 ///////////////////////CTORS/////////////////////////
 template <typename T>
@@ -201,6 +208,55 @@ void Matrix<T>::resize(int newNumRows, int newNumCols, T fillValue)
     this->row = newNumRows;
 }
 
+////////////////Adding cols///////////////
+template <typename T>
+void Matrix<T>::addCol(std::vector<T> col)
+{
+    assert(col.size() == matrixVals.size());
+    for(int i = 0; i < matrixVals.size(); ++i)
+    {
+        matrixVals[i].push_back(col[i]);
+    }
+}
+//for the last vector in the  pack
+template <typename T>
+void Matrix<T>::addCols(std::vector<T> col)
+{
+    addCol(col);
+}
+template <typename T>
+template<typename ...Cs>
+void Matrix<T>::addCols(std::vector<T> col, Cs...cols)
+{
+    addCol(col);
+    addCols(cols...);
+}
+////////////////////////////////////////
+
+////////////Adding rows////////////////
+template <typename T>
+void Matrix<T>::addRow(std::vector<T> row)
+{
+    assert(row.size() == matrixVals[0].size());
+    matrixVals.push_back(row);
+}
+//for the last vector in the  pack
+template <typename T>
+void Matrix<T>::addRows(std::vector<T> row)
+{
+    addRow(row);
+}
+//Unknown number of vectors packed
+template <typename T>
+template<typename ...Rs>
+void Matrix<T>::addRows(std::vector<T> row, Rs...rows)
+{
+    addRow(row);
+    addRows(rows...);
+}
+////////////////////////////////////////
+
+//////////////////ref//////////////////
 //Row reduce a matrix to reduced echelon form
 template <typename T>
 Matrix<T>& ref(Matrix<T> A)
@@ -246,7 +302,6 @@ Matrix<T>& ref(Matrix<T> A)
         {
             A.matrixVals[currPivotRow].swap(A.matrixVals[pivotPosition]);
             pivotPosition = currPivotRow;
-            A.print();
         }
         //pivot pos row at the top
 
@@ -280,9 +335,6 @@ Matrix<T>& ref(Matrix<T> A)
         currPivotRow++;
     }
 
-
-
-
     //STEP 2
     //Select a nonzero entry in the pivot col as a pivot.
     //If necessary, interchange rows to move this entry into the pivot position
@@ -301,6 +353,7 @@ Matrix<T>& ref(Matrix<T> A)
 
     return A;
 }
+/////////////////////////////////
 
 //Simply print out a matrix
 template <typename T>
@@ -319,6 +372,20 @@ void Matrix<T>::print()
         std::cout << std::endl;
     }
     std::cout << std::endl;
+}
+
+//////////////Transpose///////////////
+template <typename T>
+Matrix<T>& transpose(Matrix<T> A)
+{
+    Matrix<T> A_t(A.col, A.row);    //Makes the right sized transposed vector
+
+    for(int i = 0; i < A.matrixVals.size(); ++i)
+        for(int j = 0; j < A.matrixVals[0].size(); ++j)
+            A_t.matrixVals[j][i] = A.matrixVals[i][j];  //Switch the rows with the cols
+
+    A = A_t;    //So the address can be returned properly
+    return A;
 }
 
 template <typename T>
