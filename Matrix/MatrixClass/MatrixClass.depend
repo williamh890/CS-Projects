@@ -30,3 +30,15 @@
 	<cassert>
 	<stdlib.h>
 
+1479152671 source:c:\users\wbhorn\desktop\new folder\projects\matrix\matrixclass\main.cpp
+	<iostream>
+	"include\Matrix.h"
+
+1479154315 c:\users\wbhorn\desktop\new folder\projects\matrix\matrixclass\include\matrix.h
+	<vector>
+	<iostream>
+	<cassert>
+	<stdlib.h>
+	<utility>
+	<iomanip>
+

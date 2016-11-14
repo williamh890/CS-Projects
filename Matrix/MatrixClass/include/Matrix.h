@@ -5,14 +5,16 @@
 #include <iostream> //cout
 #include <cassert> //assert
 #include <stdlib.h> //abs
+#include <utility> //pair, make_pair
+#include <iomanip>
 
 template <typename T>
 class Matrix
 {
     public:
         std::vector<std::vector<T> > matrixVals;
-        int row;
-        int col;
+        unsigned int row = (int)matrixVals.size();
+        unsigned int col = (int)matrixVals[0].size();
         ////////////////CTORS//////////////
         Matrix(int r = 0, int c = 0, T val = 0);
         Matrix(std::vector<std::vector<T> > data);
@@ -217,6 +219,8 @@ void Matrix<T>::addCol(std::vector<T> col)
     {
         matrixVals[i].push_back(col[i]);
     }
+    this->row = (int)matrixVals.size();
+    this->col = (int)matrixVals[0].size();
 }
 //for the last vector in the  pack
 template <typename T>
@@ -239,6 +243,8 @@ void Matrix<T>::addRow(std::vector<T> row)
 {
     assert(row.size() == matrixVals[0].size());
     matrixVals.push_back(row);
+    this->row = (int)matrixVals.size();
+    this->col = (int)matrixVals[0].size();
 }
 //for the last vector in the  pack
 template <typename T>
@@ -268,16 +274,34 @@ Matrix<T>& ref(Matrix<T> A)
     //Current column being looked at
     int currPivotCol = 0;
     int currPivotRow = 0;
+
+    std::vector<std::pair<int,int> > pivotPositions;
     while(currPivotCol < entriesPerCol)
     {
         //STEP 1
         //Begin with the leftmost nonzero col. This is a pivot column. The pivot position is at the top.
 
+        //STEP 2
+        //Select a nonzero entry in the pivot col as a pivot.
+        //If necessary, interchange rows to move this entry into the pivot position
+
+        //STEP 3
+        //Use row replacement operations to create zeros in all positions below the pivot.
+
+        //STEP 4
+        //Ignore the row containing the pivot position and cover all rows, if any, above it.
+        //Apply steps 1-3 to the sub matrix that remains.
+        // Repeat the process unit there are no more nonzero rows to modify
+
+        //STEP 5
+        //Beginning with the rightmost pivot and working upward and to the left,
+        //create zeros above each pivot. If a pivot is not 1, make it 1 by a scaling operation
+
         while(1)  //Loop to select pivot col
         {
             A.print();
             bool zeroCol = true;
-            for(int i = 0; i < entriesPerCol; ++i)
+            for(int i = currPivotRow; i < entriesPerCol; ++i)
             {
                 if(A.matrixVals[i][currPivotCol] != 0) zeroCol = false;
             }
@@ -297,6 +321,7 @@ Matrix<T>& ref(Matrix<T> A)
         }
         //Pivot position with the largest value has been selected
 
+
         //Moves the row with the pivot position to the top if not already
         if(pivotPosition != currPivotRow)
         {
@@ -304,6 +329,7 @@ Matrix<T>& ref(Matrix<T> A)
             pivotPosition = currPivotRow;
         }
         //pivot pos row at the top
+        pivotPositions.push_back(std::make_pair(currPivotRow,currPivotCol));
 
         bool negPivot = (largestColPosValue < 0);
         //goes through and zeros out values underneath the pivot position
@@ -335,21 +361,31 @@ Matrix<T>& ref(Matrix<T> A)
         currPivotRow++;
     }
 
-    //STEP 2
-    //Select a nonzero entry in the pivot col as a pivot.
-    //If necessary, interchange rows to move this entry into the pivot position
+    for(auto n : pivotPositions)
+    {
+        std::cout << n.first << " " << n.second << std::endl;
+    }
+    //Scales all the pivot cols to 1
+    for(int i = pivotPositions.size() - 1; i >= 0; --i)
+    {
+        //Value used to determine scale
+        T currPivVal = A.matrixVals[pivotPositions[i].first][pivotPositions[i].second];
 
-    //STEP 3
-    //Use row replacement operations to create zeros in all positions below the pivot.
+        int currPivRow = pivotPositions[i].first;
+        int currPivCol = pivotPositions[i].second;
 
-    //STEP 4
-    //Ignore the row containing the pivot position and cover all rows, if any, above it.
-    //Apply steps 1-3 to the sub matrix that remains.
-    // Repeat the process unit there are no more nonzero rows to modify
+            T scale;
+            //Determine the value to scale the whole row by
+            if(currPivVal == 1)         continue;
+            else if(currPivVal > 1)     scale = currPivVal;
+            else if(currPivVal < 1)     scale = -currPivVal;
+            //Walk through the row and multiply by the scale
+            for(int c = pivotPositions[i].second; c < A.matrixVals[0].size(); ++c)
+            {
+                A.matrixVals[currPivRow][c] *= 1/scale;
+            }
+    }
 
-    //STEP 5
-    //Beginning with the rightmost pivot and working upward and to the left,
-    //create zeros above each pivot. If a pivot is not 1, make it 1 by a scaling operation
 
     return A;
 }
