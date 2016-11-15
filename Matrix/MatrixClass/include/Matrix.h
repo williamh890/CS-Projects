@@ -328,6 +328,7 @@ Matrix<T>& rref(Matrix<T> A)
         //Select the largest value to be the pivot position
         int largestColPosValue = 0;
         int pivotPosition;
+
         for(int i = currPivotRow; i < entriesPerCol; ++i)
         {
             if(abs(A.matrixVals[i][currPivotCol]) > largestColPosValue)
@@ -345,9 +346,14 @@ Matrix<T>& rref(Matrix<T> A)
             A.print();
             A.matrixVals[currPivotRow].swap(A.matrixVals[pivotPosition]);
             pivotPosition = currPivotRow;
+            for (auto n : pivotPositions)
+            {
+                std::cout << n.first << " " << n.second << std::endl << std::endl;
+            }
         }
-        //pivot pos row at the top
         pivotPositions.push_back(std::make_pair(currPivotRow,currPivotCol));
+        //pivot pos row at the top
+
 
         bool negPivot = (largestColPosValue < 0);
 
@@ -375,61 +381,62 @@ Matrix<T>& rref(Matrix<T> A)
                 }
             }
         }
+
         currPivotCol++;
         currPivotRow++;
     }
-    while(true)
+    pivotPositions.push_back(std::make_pair(currPivotRow,currPivotCol));
+    for (auto n : pivotPositions)
     {
-        for (auto n : pivotPositions)
-        {
-            std::cout << n.first << " " << n.second << std::endl;
-        }
-        //Scales all the pivot cols to 1
-        for(int i = pivotPositions.size() - 1; i >= 0; --i)
-        {
-            A.print();
-            //Value used to determine scale
-            T currPivVal = A.matrixVals[pivotPositions[i].first][pivotPositions[i].second];
-            //Location of the pivot position
-            int currPivRow = pivotPositions[i].first;
-            int currPivCol = pivotPositions[i].second;
-
-            T scale;
-            //Determine the value to scale the whole row by
-            if(currPivVal == 1)         continue;
-            else if(currPivVal > 1)     scale = currPivVal;
-            else if(currPivVal < 1)     scale = -currPivVal;
-            //Walk through the row and multiply by the scale
-            for(int c = pivotPositions[i].second; c < A.matrixVals[0].size(); ++c)
-            {
-                A.matrixVals[currPivRow][c] *= 1/scale;
-            }
-            //Every pivot position has a value of 1
-        }
-        for(int i = pivotPositions.size() - 1; i >= 0; --i)
-        {
-            int currPivRow = pivotPositions[i].first;
-            int currPivCol = pivotPositions[i].second;
-
-            T currPivVal = A.matrixVals[pivotPositions[i].first][pivotPositions[i].second];
-
-            //Runs through all the rows and finds the correct scale to zero out the position
-            for(int r = 0; r < currPivRow ; ++r)
-            {
-                //Scale to zero out col
-                T scale = -currPivVal*A.matrixVals[r][currPivCol];
-
-                //Runs through all the entries in the row and multiplies them by the scale
-                for(int c = currPivCol; c < A.matrixVals[0].size(); ++c)
-                {
-                    A.matrixVals[r][c] += scale * (A.matrixVals[currPivRow][c]);
-                    T currPosVal = A.matrixVals[r][c];
-                }
-            }
-        }
-        if(!correct(A, pivotPositions)) continue;
-        break;
+        std::cout << n.first << " " << n.second << std::endl;
     }
+
+    A.print();
+
+    //Scales all the pivot cols to 1
+    for(int i = pivotPositions.size() - 1; i >= 0; --i)
+    {
+        A.print();
+        //Value used to determine scale
+        T currPivVal = A.matrixVals[pivotPositions[i].first][pivotPositions[i].second];
+        //Location of the pivot position
+        int currPivRow = pivotPositions[i].first;
+        int currPivCol = pivotPositions[i].second;
+
+        T scale;
+        //Determine the value to scale the whole row by
+        if(currPivVal == 1)         continue;
+        else if(currPivVal > 1)     scale = currPivVal;
+        else if(currPivVal < 1)     scale = -currPivVal;
+        //Walk through the row and multiply by the scale
+        for(int c = pivotPositions[i].second; c < A.matrixVals[0].size(); ++c)
+        {
+            A.matrixVals[currPivRow][c] *= (1/scale);
+        }
+        //Every pivot position has a value of 1
+    }
+//    for(int i = pivotPositions.size() - 1; i >= 0; --i)
+//    {
+//        int currPivRow = pivotPositions[i].first;
+//        int currPivCol = pivotPositions[i].second;
+//
+//        T currPivVal = A.matrixVals[pivotPositions[i].first][pivotPositions[i].second];
+//
+//        //Runs through all the rows and finds the correct scale to zero out the position
+//        for(int r = 0; r < currPivRow ; ++r)
+//        {
+//            //Scale to zero out col
+//            T scale = -currPivVal*A.matrixVals[r][currPivCol];
+//
+//            //Runs through all the entries in the row and multiplies them by the scale
+//            for(int c = currPivCol; c < A.matrixVals[0].size(); ++c)
+//            {
+//                A.matrixVals[r][c] += scale * (A.matrixVals[currPivRow][c]);
+//                T currPosVal = A.matrixVals[r][c];
+//            }
+//        }
+//    }
+
     return A;
 }
 /////////////////////////////////
