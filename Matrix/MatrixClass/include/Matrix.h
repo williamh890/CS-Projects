@@ -265,6 +265,23 @@ void Matrix<T>::addRows(std::vector<T> row, Rs...rows)
 //////////////////ref//////////////////
 //Row reduce a matrix to reduced echelon form
 template <typename T>
+bool correct(Matrix<T> A ,std::vector<std::pair<int,int> > pivotPositions)
+{
+    for(int i = 0; i < pivotPositions.size(); ++i)
+    {
+        int currRow = pivotPositions[i].first;
+        int currCol = pivotPositions[i].second;
+
+        if(A.matrixVals[currRow][currCol] != 1) return false;
+        for(int r = currRow - 1; r >= 0; --r)
+        {
+            if(A.matrixVals[r][currCol] != 0) return false;
+        }
+    }
+    return true;
+}
+
+template <typename T>
 Matrix<T>& rref(Matrix<T> A)
 {
     //Number of entries in each column
@@ -299,6 +316,7 @@ Matrix<T>& rref(Matrix<T> A)
 
         while(1)  //Loop to select pivot col
         {
+            A.print();
             bool zeroCol = true;
             for(int i = currPivotRow; i < entriesPerCol; ++i)
             {
@@ -321,8 +339,10 @@ Matrix<T>& rref(Matrix<T> A)
         //Pivot position with the largest value has been selected
 
         //Moves the row with the pivot position to the top if not already
+        A.print();
         if(pivotPosition != currPivotRow)
         {
+            A.print();
             A.matrixVals[currPivotRow].swap(A.matrixVals[pivotPosition]);
             pivotPosition = currPivotRow;
         }
@@ -330,6 +350,7 @@ Matrix<T>& rref(Matrix<T> A)
         pivotPositions.push_back(std::make_pair(currPivotRow,currPivotCol));
 
         bool negPivot = (largestColPosValue < 0);
+
         //goes through and zeros out values underneath the pivot position
         for(int i = currPivotRow + 1; i < entriesPerCol; ++i)
         {
@@ -357,47 +378,57 @@ Matrix<T>& rref(Matrix<T> A)
         currPivotCol++;
         currPivotRow++;
     }
-    //Scales all the pivot cols to 1
-    for(int i = pivotPositions.size() - 1; i >= 0; --i)
+    while(true)
     {
-        //Value used to determine scale
-        T currPivVal = A.matrixVals[pivotPositions[i].first][pivotPositions[i].second];
-        //Location of the pivot position
-        int currPivRow = pivotPositions[i].first;
-        int currPivCol = pivotPositions[i].second;
-
-        T scale;
-        //Determine the value to scale the whole row by
-        if(currPivVal == 1)         continue;
-        else if(currPivVal > 1)     scale = currPivVal;
-        else if(currPivVal < 1)     scale = -currPivVal;
-        //Walk through the row and multiply by the scale
-        for(int c = pivotPositions[i].second; c < A.matrixVals[0].size(); ++c)
+        for (auto n : pivotPositions)
         {
-            A.matrixVals[currPivRow][c] *= 1/scale;
+            std::cout << n.first << " " << n.second << std::endl;
         }
-        //Every pivot position has a value of 1
-    }
-    for(int i = pivotPositions.size() - 1; i >= 0; --i)
-    {
-        int currPivRow = pivotPositions[i].first;
-        int currPivCol = pivotPositions[i].second;
-
-        T currPivVal = A.matrixVals[pivotPositions[i].first][pivotPositions[i].second];
-
-        //Runs through all the rows and finds the correct scale to zero out the position
-        for(int r = 0; r < currPivRow ; ++r)
+        //Scales all the pivot cols to 1
+        for(int i = pivotPositions.size() - 1; i >= 0; --i)
         {
-            //Scale to zero out col
-            T scale = -currPivVal*A.matrixVals[r][currPivCol];
+            A.print();
+            //Value used to determine scale
+            T currPivVal = A.matrixVals[pivotPositions[i].first][pivotPositions[i].second];
+            //Location of the pivot position
+            int currPivRow = pivotPositions[i].first;
+            int currPivCol = pivotPositions[i].second;
 
-            //Runs through all the entries in the row and multiplies them by the scale
-            for(int c = currPivCol; c < A.matrixVals[0].size(); ++c)
+            T scale;
+            //Determine the value to scale the whole row by
+            if(currPivVal == 1)         continue;
+            else if(currPivVal > 1)     scale = currPivVal;
+            else if(currPivVal < 1)     scale = -currPivVal;
+            //Walk through the row and multiply by the scale
+            for(int c = pivotPositions[i].second; c < A.matrixVals[0].size(); ++c)
             {
-                A.matrixVals[r][c] += scale * (A.matrixVals[currPivRow][c]);
-                T currPosVal = A.matrixVals[r][c];
+                A.matrixVals[currPivRow][c] *= 1/scale;
+            }
+            //Every pivot position has a value of 1
+        }
+        for(int i = pivotPositions.size() - 1; i >= 0; --i)
+        {
+            int currPivRow = pivotPositions[i].first;
+            int currPivCol = pivotPositions[i].second;
+
+            T currPivVal = A.matrixVals[pivotPositions[i].first][pivotPositions[i].second];
+
+            //Runs through all the rows and finds the correct scale to zero out the position
+            for(int r = 0; r < currPivRow ; ++r)
+            {
+                //Scale to zero out col
+                T scale = -currPivVal*A.matrixVals[r][currPivCol];
+
+                //Runs through all the entries in the row and multiplies them by the scale
+                for(int c = currPivCol; c < A.matrixVals[0].size(); ++c)
+                {
+                    A.matrixVals[r][c] += scale * (A.matrixVals[currPivRow][c]);
+                    T currPosVal = A.matrixVals[r][c];
+                }
             }
         }
+        if(!correct(A, pivotPositions)) continue;
+        break;
     }
     return A;
 }
@@ -407,8 +438,68 @@ template <typename T>
 Matrix<T>& invert(Matrix<T> A)
 {
     //Add I_d matrix to the end of the existing matrix
+    //
+    for(int i = 0; i < A.matrixVals.size(); ++i)
+    {
+
+    }
+}
+
+//////////Determinant////////////
+template <typename T>
+T determinant(const Matrix<T> A){
+	//if matrix isn't square dont bother
+	assert(A.row == A.col);
+	//get the size of the matrix
+	int size= A.row;
+	int det;
+	int cofactor;
+	//1 by 1
+	if(size==1){
+		return A.matrixVals[0][0];
+	}
+	//lambda function for 2by 2
+	auto det2=[](Matrix<T> subA){ return (subA.matrixVals[1][1]*subA.matrixVals[0][0]-subA.matrixVals[1][0]*subA.matrixVals[0][1]);};
+
+		if(size>2){ /////cofactor
+
+            std::vector<Matrix<T>> submatricies;
+            bool negative=false;
+        ///////////
+        while(submatricies[0].matrixVals.size()>2){
+			for(int k=0;k<A.matrixVals.size();k++){
+                cofactor=A.matrixVals[0][k];
+
+                    for(int j=0;j<A.matrixVals.size();j++){
+                        if(j==k)
+                            continue;
+                        for(int l=0; l <A.matrixVals.size();l++){
+                            if(l==k)
+                                continue;
+                            submatricies.push_back(A.matrixVals[j][k]);
+                        }
+                    }
+
+
+
+                if(negative){
+                    cofactor*=-1;
+                    negative=false;
+                }else{
+                    negative=true;
+                }
+			}
+        }
+			///////////////////////
+		}
+	//for 2by2
+	if(size==2){
+		return det2(A);
+	}
+
 
 }
+
 
 
 template <typename T>

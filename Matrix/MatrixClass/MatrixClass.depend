@@ -42,11 +42,11 @@
 	<utility>
 	<iomanip>
 
-1479168722 source:c:\users\william\desktop\cs_201\wbhorn\matrix\matrixclass\main.cpp
+1479174211 source:c:\users\william\desktop\cs_201\wbhorn\matrix\matrixclass\main.cpp
 	<iostream>
 	"include\Matrix.h"
 
-1479171883 c:\users\william\desktop\cs_201\wbhorn\matrix\matrixclass\include\matrix.h
+1479176289 c:\users\william\desktop\cs_201\wbhorn\matrix\matrixclass\include\matrix.h
 	<vector>
 	<iostream>
 	<cassert>
