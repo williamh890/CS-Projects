@@ -42,3 +42,15 @@
 	<utility>
 	<iomanip>
 
+1479168722 source:c:\users\william\desktop\cs_201\wbhorn\matrix\matrixclass\main.cpp
+	<iostream>
+	"include\Matrix.h"
+
+1479171883 c:\users\william\desktop\cs_201\wbhorn\matrix\matrixclass\include\matrix.h
+	<vector>
+	<iostream>
+	<cassert>
+	<stdlib.h>
+	<utility>
+	<iomanip>
+
