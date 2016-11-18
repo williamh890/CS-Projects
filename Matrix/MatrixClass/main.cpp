@@ -3,8 +3,6 @@
 
 using namespace std;
 
-vector<int> name;
-
 int main()
 {
     Matrix<double> first({{1,2,3},
@@ -20,16 +18,22 @@ int main()
                            {3,9,-1},
                            {5,5,2}});
 
+    Matrix<long double>prob30({{1,9,8,0},{6,-6,-12,0},{-5,1,6,0},{1,0,-1,0}});
+
     Matrix<int> zeroMatrix(3,5);
 
     vector<double> r1 {2,2,3};
     vector<double> r2 {4,5,7};
 
-    rref(second).print();
-    rref(transpose(first)).print();
-    rref(rrefTest).print();
-    rref(sqTest).print();
-    //rref(zeroMatrix).print();
+    rref(prob30).print();
+
+//    first = transpose(first);
+//    rref(rrefTest).print();
+//    rref(first).print();
+//    rref(second).print();
+//    rref(sqTest).print();
+
+
 
     return 0;
 }
