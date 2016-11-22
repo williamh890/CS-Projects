@@ -39,7 +39,11 @@ class Matrix
         void addCols(std::vector<T> col);
         template<typename ...Cs>
         void addCols(std::vector<T> col, Cs...cols);
-        ////////////////////////////////////////////
+        ////////////Elementary Row Ops////////////////
+        void replacement(long curRow, long otherRow, T otherRowScale);
+        void interchange(long row1, long row2);
+        void scale(long row, T scale);
+
 
         ////////////////Display/////////////////
         void print();
@@ -284,23 +288,34 @@ bool correct(Matrix<T> A ,std::vector<std::pair<int,int> > pivotPositions)
 }
 
 template <typename T>
+void Matrix<T>::interchange(long row1, long row2)
+{
+    matrixVals[row1].swap(matrixVals[row2]);
+}
+
+template <typename T>
+void Matrix<T>::scale(long rowNum, T scale)
+{
+    assert(rowNum >= 0 &&  rowNum < matrixVals[0].size());
+    for(auto & r : matrixVals[rowNum])
+    {
+        r *= scale;
+    }
+}
+//replace
+template <typename T>
+void Matrix<T>::replacement(long curRow, long otherRow, T otherRowScale)
+{
+    for(int i = 0; i < matrixVals[0].size(); ++i)
+    {
+        matrixVals[curRow][i] = matrixVals[curRow][i] + (otherRowScale * matrixVals[otherRow][i]);
+    }
+}
+
+
+template <typename T>
 Matrix<T> rref(Matrix<T> A)
 {
-    bool deBug = true;
-    //Number of entries in each column
-    int entriesPerCol = A.row;
-    //Number of entries in each row
-    int entriesPerRow = A.col;
-    //Current column being looked at
-    int currPivotCol = 0;
-    int currPivotRow = 0;
-
-    std::vector<std::pair<int,int> > pivotPositions;
-
-    if(deBug) A.print();
-
-    while(pivotPositions.size() < entriesPerCol)
-    {
         //STEP 1
         //Begin with the leftmost nonzero col. This is a pivot column. The pivot position is at the top.
 
@@ -319,151 +334,7 @@ Matrix<T> rref(Matrix<T> A)
         //STEP 5
         //Beginning with the rightmost pivot and working upward and to the left,
         //create zeros above each pivot. If a pivot is not 1, make it 1 by a scaling operation
-        bool zeroCol = true;
-        while(zeroCol)  //Loop to select pivot col
-        {
-            zeroCol = true;
-            for(int i = currPivotRow; i < entriesPerCol; ++i)
-            {
-                if(A.matrixVals[i][currPivotCol] != 0)
-                {
-                    zeroCol = false;
-                    break;
-                }
-            }
-            if(zeroCol)++currPivotCol;
-        }
-        //Select the largest value to be the pivot position
-        T largestColPosValue = 0;
-        int pivRow;
 
-        for(int i = currPivotRow; i < entriesPerCol; ++i)
-        {
-            if(abs(A.matrixVals[i][currPivotCol]) > abs(largestColPosValue))
-            {
-                largestColPosValue = A.matrixVals[i][currPivotCol];
-                pivRow = i;
-            }
-        }
-        //Pivot position with the largest value has been selected
-
-        //Moves the row with the pivot position to the top if not already
-        if(pivRow != currPivotRow || pivRow == (int)(A.matrixVals.size() - 1) || pivRow == 0)
-        {
-            A.matrixVals[currPivotRow].swap(A.matrixVals[pivRow]);
-        }
-        pivotPositions.push_back(std::make_pair(currPivotRow,currPivotCol));
-        //pivot pos row at the top
-
-        if(deBug) A.print();
-        bool negPivot = (largestColPosValue < 0);
-
-        //goes through and zeros out values underneath the pivot position
-        for(int i = currPivotRow + 1; i < entriesPerCol; ++i)
-        {
-            T scale;
-            //Determine the value to scale the whole row by
-            //if(A.matrixVals[i][currPivotCol] == 0) continue; //The value is already zero
-
-            if     ((A.matrixVals[i][currPivotCol] > 0 && !negPivot) ||
-                    (A.matrixVals[i][currPivotCol] < 0 && !negPivot) ||
-                    A.matrixVals[i][currPivotCol] == largestColPosValue)
-                                scale = -(largestColPosValue / A.matrixVals[i][currPivotCol]);  //Multiply by the -reciprocal
-
-            else if (A.matrixVals[i][currPivotCol] > 0 && negPivot) //Values already have opposite signs
-                                scale = (largestColPosValue / A.matrixVals[i][currPivotCol]);
-
-
-
-            if(A.matrixVals[i][currPivotCol] != 0)
-            {
-                for(int r = 0; r < entriesPerRow; ++r)
-                {
-                    if(deBug) {std::cout << A.matrixVals[i][currPivotCol] << " *" << largestColPosValue
-                                         << " = " << (A.matrixVals[i][r] * scale) << std::endl;}
-
-                    A.matrixVals[i][r] = (A.matrixVals[i][r] * scale) +  A.matrixVals[currPivotRow][r];
-                }
-                if(deBug) A.print();
-            }
-        }
-         if(deBug)std::cout << "NEXT PIV ROW\n";
-        currPivotRow++;
-    }
-
-    if(deBug) A.print();
-    if(deBug) std::cout << "ref\n";
-    //Scales all the pivot cols to 1
-    for(int i = pivotPositions.size() - 1; i >= 0; --i)
-    {
-        //Value used to determine scale
-        T currPivVal = A.matrixVals[pivotPositions[i].first][pivotPositions[i].second];
-        //Location of the pivot position
-        int currPivRow = pivotPositions[i].first;
-
-        T scale;
-
-
-        //Determine the value to scale the whole row by
-        if(currPivVal == 1)         continue;
-        else if(currPivVal > 1)     scale = currPivVal;
-        else if(currPivVal < 1)     scale = currPivVal;
-
-        //Walk through the row and multiply by the scale
-        for(int c = pivotPositions[i].second; c < (int)A.matrixVals[0].size(); ++c)
-        {
-            A.matrixVals[currPivRow][c] *= (1/scale);
-        }
-        if(deBug) A.print();
-    }
-     //Every pivot position has a value of 1
-
-    if(deBug) A.print();
-
-    for(int i = pivotPositions.size() - 1; i >= 0; --i)
-    {
-        int currPivRow = pivotPositions[i].first;
-        int currPivCol = pivotPositions[i].second;
-
-        T currPivVal = A.matrixVals[pivotPositions[i].first][pivotPositions[i].second];
-
-        //Runs through all the rows and finds the correct scale to zero out the position
-        for(int r = 0; r < currPivRow ; ++r)
-        {
-            //Scale to zero out col
-            T scale = -currPivVal*A.matrixVals[r][currPivCol];
-            //Runs through all the entries in the row and multiplies them by the scale
-            for(int c = currPivCol; c < (int)A.matrixVals[0].size(); ++c)
-            {
-                A.matrixVals[r][c] += scale * (A.matrixVals[currPivRow][c]);
-            }
-        }
-    }
-     if(deBug) A.print();
-    //Move Zero rows to the bottom
-    std::vector<int> zeroRows;
-    for(int r = 0; r < entriesPerCol; ++r)  //Runs through all the rows and checks for a zero row
-    {
-        //Assumed a zero row
-        bool isZeroRow = true;
-        for(int c = 0; c < entriesPerRow; ++c)
-        {
-            if(A.matrixVals[r][c] > 1e-10)
-            {
-                isZeroRow = false;
-                break;
-            }
-        }
-        if(isZeroRow) zeroRows.push_back(r);//Push the index of the zero row back
-    }
-
-    std::vector<T> zeroVec(A.matrixVals[0].size(),0);   //Generic zero vector size of row
-    //removes zero rows from middle and adds them to the bottom
-    for(auto n : zeroRows)
-    {
-        A.matrixVals.erase(A.matrixVals.begin() + n);
-        A.matrixVals.push_back(zeroVec);
-    }
 
     return A;
 }

@@ -25,15 +25,14 @@ int main()
     vector<double> r1 {2,2,3};
     vector<double> r2 {4,5,7};
 
-    rref(prob30).print();
+    first.scale(0, 2);
+    first.print();
 
-//    first = transpose(first);
-//    rref(rrefTest).print();
-//    rref(first).print();
-//    rref(second).print();
-//    rref(sqTest).print();
+    first.interchange(0,1);
+    first.print();
 
-
+    first.replacement(1,0,-.5);
+    first.print();
 
     return 0;
 }
