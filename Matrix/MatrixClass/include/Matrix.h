@@ -171,8 +171,6 @@ Matrix<T>& operator*(Matrix<T> a, Matrix<T> b)  //Matrix Multiplication
 {
     return (a*=b);
 }
-
-
 ///////////////////////////////////////////////////////////////////
 
 ///////////////////////////FUCNTIONALITY///////////////////////////
@@ -314,6 +312,7 @@ void Matrix<T>::replacement(int curRow, int otherRow, T otherRowScale)  //Curren
     }
 }
 
+///////Functions used in rref//////////
 template <typename T>
 bool zeroColumn(Matrix<T> A, int currPivotRow, int currPivotCol)
 {
@@ -416,29 +415,10 @@ void zero_out_above_and_below(Matrix<T> & A, int currPivotRow, int currPivotCol,
         A.replacement(r, currPivotRow, -A[r][currPivotCol]);
     }
 }
-
+/////////////////////////////////////
 template <typename T>
 Matrix<T> rref(Matrix<T> A, bool debug = false)
 {
-        //STEP 1
-        //Begin with the leftmost nonzero col. This is a pivot column. The pivot position is at the top.
-
-        //STEP 2
-        //Select a nonzero entry in the pivot col as a pivot.
-        //If necessary, interchange rows to move this entry into the pivot position
-
-        //STEP 3
-        //Use row replacement operations to create zeros in all positions below the pivot.
-
-        //STEP 4
-        //Ignore the row containing the pivot position and cover all rows, if any, above it.
-        //Apply steps 1-3 to the sub matrix that remains.
-        // Repeat the process unit there are no more nonzero rows to modify
-
-        //STEP 5
-        //Beginning with the rightmost pivot and working upward and to the left,
-        //create zeros above each pivot. If a pivot is not 1, make it 1 by a scaling operation
-
     //Starts at the top left of the matrix
     int currPivotCol = 0;
     int currPivotRow = 0;
@@ -546,8 +526,6 @@ T determinant(const Matrix<T> A){
                         }
                     }
 
-
-
                 if(negative){
                     cofactor*=-1;
                     negative=false;
@@ -562,11 +540,7 @@ T determinant(const Matrix<T> A){
 	if(size==2){
 		return det2(A);
 	}
-
-
 }
-
-
 
 template <typename T>
 void Matrix<T>::print()
