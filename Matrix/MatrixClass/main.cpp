@@ -12,7 +12,7 @@ int main()
                            { 2, 4, 6, 8},
                            {3, 6, 9, 13}});
 
-    Matrix<double> rrefTest({{3,-9,12,-9,6,15},{3,-7,8,-5,8,9},{0,3,-6,6,4,-5}});
+    Matrix<double> A({{0,3,-6,6,4,-5},{3,-9,12,-9,6,15},{3,-7,8,-5,8,9},{0,0,0,0,0,0}});
 
     Matrix<double> sqTest({{4,-7,2},
                            {3,9,-1},
@@ -25,15 +25,8 @@ int main()
     vector<double> r1 {2,2,3};
     vector<double> r2 {4,5,7};
 
-    first.scale(0, 2);
-    first.print();
-
-    first.interchange(0,1);
-    first.print();
-
-    first.replacement(1,0,-.5);
-    first.print();
-
+    rref(A,true).print();
+    rref(prob30).print();
     return 0;
 }
 

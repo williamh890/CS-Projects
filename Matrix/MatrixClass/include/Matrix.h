@@ -6,7 +6,8 @@
 #include <cassert> //assert
 #include <stdlib.h> //abs
 #include <utility> //pair, make_pair
-#include <iomanip>
+#include <iomanip> //setprecision
+#include <math.h> //round
 
 template <typename T>
 class Matrix
@@ -40,11 +41,9 @@ class Matrix
         template<typename ...Cs>
         void addCols(std::vector<T> col, Cs...cols);
         ////////////Elementary Row Ops////////////////
-        void replacement(long curRow, long otherRow, T otherRowScale);
-        void interchange(long row1, long row2);
-        void scale(long row, T scale);
-
-
+        void replacement(int curRow, int otherRow, T otherRowScale);
+        void interchange(int row1, int row2);
+        void scale(int row, T scale);
         ////////////////Display/////////////////
         void print();
 
@@ -288,15 +287,16 @@ bool correct(Matrix<T> A ,std::vector<std::pair<int,int> > pivotPositions)
 }
 
 template <typename T>
-void Matrix<T>::interchange(long row1, long row2)
+void Matrix<T>::interchange(int row1, int row2)
 {
     matrixVals[row1].swap(matrixVals[row2]);
 }
 
 template <typename T>
-void Matrix<T>::scale(long rowNum, T scale)
+void Matrix<T>::scale(int rowNum, T scale)
 {
-    assert(rowNum >= 0 &&  rowNum < matrixVals[0].size());
+    assert(rowNum >= 0 &&  rowNum < (int)matrixVals[0].size());
+
     for(auto & r : matrixVals[rowNum])
     {
         r *= scale;
@@ -304,17 +304,117 @@ void Matrix<T>::scale(long rowNum, T scale)
 }
 //replace
 template <typename T>
-void Matrix<T>::replacement(long curRow, long otherRow, T otherRowScale)
+void Matrix<T>::replacement(int curRow, int otherRow, T otherRowScale)  //Current row gets changed
 {
-    for(int i = 0; i < matrixVals[0].size(); ++i)
+    for(int i = 0; i < (int)matrixVals[0].size(); ++i)
     {
         matrixVals[curRow][i] = matrixVals[curRow][i] + (otherRowScale * matrixVals[otherRow][i]);
     }
 }
 
+template <typename T>
+bool zeroColumn(Matrix<T> A, int currPivotRow, int currPivotCol)
+{
+    //Assumes zero column
+    bool isZeroCol = true;
+
+    for(int r = currPivotRow; r < (int)A.matrixVals.size(); ++r)
+    {
+        //If a value is not zero, then break
+        if(A[r][currPivotCol] != 0)
+        {
+            isZeroCol = false;
+            break;
+        }
+    }
+    return isZeroCol;
+}
 
 template <typename T>
-Matrix<T> rref(Matrix<T> A)
+bool zeroRow(Matrix<T> A, int currPivotRow)
+{
+    bool isZeroRow = true;
+
+    for(int c = 0; c < (int)A[0].size(); ++c)
+    {
+        if(A[currPivotRow][c] != 0)
+        {
+            isZeroRow = false;
+            break;
+        }
+    }
+    return isZeroRow;
+}
+
+template <typename T>
+int largest_value_position(Matrix<T> A, int currPivotRow, int currPivotCol)
+{
+    int largestValPos = 0;
+    T largestVal = 0;
+    //Runes through the values under the row
+    for(int r = currPivotRow; r < (int)A.matrixVals.size(); ++r)
+    {
+        if(abs(A[r][currPivotCol]) > largestVal)
+        {
+            largestValPos = r;
+            largestVal = abs(A[r][currPivotCol]);
+        }
+    }
+    return largestValPos;
+}
+
+template <typename T>
+void zero_row_to_bottom (Matrix<T> & A, int currPivotRow)
+{
+    assert(zeroRow(A, currPivotRow));
+    //Erase the zero row
+    A.matrixVals.erase(A.matrixVals.begin() + currPivotRow);
+    //Adds a zero row to the end
+    std::vector<T> zeros(A[0].size(), 0);
+    A.matrixVals.push_back(zeros);
+}
+
+template <typename T>
+void move_pivot_to_top(Matrix<T> & A, int currPivotRow, int largestValueRow)
+{
+    //Moves largest valued row to the top
+    A.matrixVals[currPivotRow].swap(A.matrixVals[largestValueRow]);
+}
+
+template <typename T>
+void scale_pivot_row_to_1(Matrix<T> & A, int currPivotRow, int currPivotCol)
+{
+    if(zeroRow(A, currPivotRow)) return;
+
+    T pivotPositionVal = A[currPivotRow][currPivotCol];
+    T rowScale;
+    //Determines the value needed to scale pivot by
+    if     (pivotPositionVal == 1) return;
+    else if(pivotPositionVal  > 0) rowScale =  1 / pivotPositionVal;
+    else    /*value is negative*/  rowScale = -1 / pivotPositionVal;
+
+    //Performs the operation
+    A.scale(currPivotRow, rowScale);
+    //Pivot position should be 1
+
+}
+
+template <typename T>
+void zero_out_above_and_below(Matrix<T> & A, int currPivotRow, int currPivotCol, int exitRow)
+{
+    //zero pivot col, except piv position
+    for(int r = 0; r < (int)A.matrixVals.size(); ++r)
+    {
+        //skips zeroing out pivot row, or if value already zero
+        if(r == currPivotRow) continue;
+        if(A[r][currPivotCol] == 0) continue;
+
+        A.replacement(r, currPivotRow, -A[r][currPivotCol]);
+    }
+}
+
+template <typename T>
+Matrix<T> rref(Matrix<T> A, bool debug = false)
 {
         //STEP 1
         //Begin with the leftmost nonzero col. This is a pivot column. The pivot position is at the top.
@@ -335,7 +435,64 @@ Matrix<T> rref(Matrix<T> A)
         //Beginning with the rightmost pivot and working upward and to the left,
         //create zeros above each pivot. If a pivot is not 1, make it 1 by a scaling operation
 
+    //Starts at the top left of the matrix
+    int currPivotCol = 0;
+    int currPivotRow = 0;
 
+    //By default exits at the last row
+    int exitRow = (int)A.matrixVals.size();
+
+    bool isDone = false;
+
+    if(debug) A.print();
+
+    while(true)
+    {
+        while(true)
+        {
+            //If row of zeros, move to the bottom and add 1 to the exit row
+            if(zeroRow(A,currPivotRow))
+            {
+                zero_row_to_bottom(A, currPivotRow);
+                --exitRow;
+            }
+            //Makes sure the next row isnt also a zero row
+            if(!zeroRow(A,currPivotRow)) break;
+            //Checks to see if done
+            if(currPivotRow >= exitRow)
+            {
+                isDone = true;
+                break;
+            }
+        }
+        if(isDone) break;
+
+        if(debug) A.print();
+
+        //If all zeros in pivot position
+        while(true)
+        {
+            if(zeroColumn(A,currPivotRow,currPivotCol)) ++currPivotCol;
+            else break;
+        }
+        //finds the largest value in the pivot column
+        int largestValueRow = largest_value_position(A,currPivotRow,currPivotCol); //Returns the row that has the largest value
+
+        if(debug) std::cout << "LVR: " << largestValueRow << std::endl;
+        if(debug) std::cout << "PR: " << currPivotRow << " " << "PC: " << currPivotCol << std::endl;
+
+        //Move the largest value row to the top
+        move_pivot_to_top(A, currPivotRow, largestValueRow);
+
+
+        if(debug) A.print();
+
+        scale_pivot_row_to_1(A, currPivotRow, currPivotCol);
+        if(debug) A.print();
+
+        zero_out_above_and_below(A, currPivotRow, currPivotCol, exitRow);
+        ++currPivotRow;
+    }
     return A;
 }
 /////////////////////////////////
