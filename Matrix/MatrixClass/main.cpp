@@ -12,8 +12,8 @@ int main()
                            { 2, 4, 6, 8},
                            {3, 6, 9, 13}});
 
-    Matrix<double> A({{0,3,-6,6},
-                      {3,-9,22,-9},
+    Matrix<double> A({{-2.6,3,-6,6},
+                      {3,-9,22.5,-9},
                       {3,-7,-8,-5},
                       {0,0,0,0}});
 
@@ -31,10 +31,10 @@ int main()
     //cout << round(1.33333333 * pow(10,2)) / pow(10,2) << endl;
 
     rref(A).print();
-//    rref(prob30).print();
-//    rref(second).print();
-//    rref(first).print();
-//    rref(zeroMatrix).print();
+    rref(prob30).print();
+    rref(second).print();
+    rref(first).print();
+    rref(zeroMatrix).print();
     return 0;
 }
 

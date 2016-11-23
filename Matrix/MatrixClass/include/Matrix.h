@@ -8,8 +8,7 @@
 #include <utility> //pair, make_pair
 #include <iomanip> //setprecision
 #include <math.h> //round
-
-const int DECIMAL_PRECISION = 3;
+#include <type_traits>
 
 template <typename T>
 class Matrix
@@ -572,15 +571,17 @@ T determinant(const Matrix<T> A){
 template <typename T>
 void Matrix<T>::print()
 {
+    const int DECIMAL_PRECISION = 3;
+
     if(this->row == 0 || this->col == 0) {std::cout << std::endl << "[Empty Matrix]" << std::endl; return;}
 
     std::cout << std::endl;
     for(auto r : matrixVals)
     {
-        std::cout << " ";
+        std::cout << std::setw(DECIMAL_PRECISION);
         for(auto c : r )
         {
-            std::cout << c << " ";
+            std::cout << std::setw(DECIMAL_PRECISION) << c << " ";
         }
         std::cout << std::endl;
     }
