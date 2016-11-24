@@ -480,15 +480,39 @@ Matrix<T> rref(Matrix<T> A, bool debug = false)
     return A;
 }
 /////////////////////////////////
+template <typename T>
+void add_id(Matrix<T> & A)
+{
+    //Creates vector of zeros
+    std::vector<T> id_Row(A[0].size(), 0);
+    //Loops through all the rows
+    for(int r = 0, id_c = 0; r < A.matrixVals.size(); ++r, ++id_c)
+    {
+        //Puts a one in the vec
+        id_Row[id_c] = 1;
+        //Tacks it onto the end of the matrix
+        A.matrixVals[r].insert(A.matrixVals[r].end(), id_Row.begin(), id_Row.end());
+        //Sets the vector back to zero
+        id_Row.assign(id_Row.size(), 0);
+    }
+}
 
 template <typename T>
-Matrix<T>& invert(Matrix<T> A)
+void remove_id(Matrix<T> & A)
 {
-    //Add identity matrix to the left end of A and row reduce
-    for(int i = 0; i < A.matrixVals.size(); ++i)
+    for(int r = 0; r < A.matrixVals.size(); ++r)
     {
-
+        A.matrixVals[r].erase(A.matrixVals[r].begin(), A.matrixVals[r].begin() + (A[r].size()/2));
     }
+}
+
+template <typename T>
+Matrix<T> invert(Matrix<T> A)
+{
+    add_id(A);
+    A = rref(A);
+    remove_id(A);
+    return A;
 }
 
 //////////Determinant////////////

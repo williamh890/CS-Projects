@@ -5,8 +5,8 @@ using namespace std;
 
 int main()
 {
-    Matrix<double> first({{1,2,3},
-                           {4,5,6}});
+    Matrix<double> first({{1,2},
+                          {4,5}});
 
     Matrix<double> second({{1, 2, 4, 8},
                            { 2, 4, 6, 8},
@@ -31,13 +31,8 @@ int main()
     vector<double> r1 {2,2,3};
     vector<double> r2 {4,5,7};
 
-    //cout << round(1.33333333 * pow(10,2)) / pow(10,2) << endl;
-
-   rref(first).print();
-   rref(second).print();
-   rref(A).print();
-   rref(sqTest).print();
-   rref(prob30).print();
+    first.print();
+    invert(first).print();
 
     return 0;
 }
