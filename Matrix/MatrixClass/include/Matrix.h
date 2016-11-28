@@ -515,55 +515,61 @@ Matrix<T> invert(Matrix<T> A)
     return A;
 }
 
+template <typename T>
+T det2_2(Matrix<T> A)
+{
+    return ((A[0][0] * A[1][1]) - (A[0][1] * A[1][0]));
+}
+
+template <typename T>
+class Cofactor : public Matrix<T>
+{
+public:
+    T cofactor;
+    int Col;
+    Cofactor(T cofacVal, int cofacCol, Matrix<T> Derived) : cofactor(cofacVal)
+    {
+        //Pulls in the whole matrix
+        Derived.matrixVals.swap(this->matrixVals);
+
+        //Erases the top row
+        this->matrixVals.erase(this->matrixVals.begin());
+
+        //Erase the col from the cofactor
+        for(int i = 0; i < this->matrixVals.size(); ++ i)
+        {
+            this->matrixVals[i].erase(this->matrixVals[i].begin() + cofacCol);
+        }
+    }
+
+};
 //////////Determinant////////////
 template <typename T>
-T determinant(const Matrix<T> A){
+T det(Matrix<T> A){
 	//if matrix isn't square dont bother
-	assert(A.row == A.col);
-	//get the size of the matrix
-	int size= A.row;
-	int det;
-	int cofactor;
-	//1 by 1
-	if(size==1){
-		return A.matrixVals[0][0];
-	}
-	//lambda function for 2by 2
-	auto det2=[](Matrix<T> subA){ return (subA.matrixVals[1][1]*subA.matrixVals[0][0]-subA.matrixVals[1][0]*subA.matrixVals[0][1]);};
+    assert(A.col == A.row);
 
-		if(size>2){ /////cofactor
+    int sign = 1;
+    T value;
+    T det = 0;
 
-            std::vector<Matrix<T>> submatricies;
-            bool negative=false;
-        ///////////
-        while(submatricies[0].matrixVals.size()>2){
-			for(int k=0;k<A.matrixVals.size();k++){
-                cofactor=A.matrixVals[0][k];
+    std::vector<Cofactor<T>> cofactors;
 
-                    for(int j=0;j<A.matrixVals.size();j++){
-                        if(j==k)
-                            continue;
-                        for(int l=0; l <A.matrixVals.size();l++){
-                            if(l==k)
-                                continue;
-                            submatricies.push_back(A.matrixVals[j][k]);
-                        }
-                    }
+    //If a is just a 2X2
+    if(A.matrixVals.size() == 2)
+    {
+        return det2_2(A);
+    }
+    //If larger do cofactor expansion
+    for(int cof_Col = 0; cof_Col < A[0].size(); ++cof_Col)
+    {
+        Cofactor<T> currCofac(A[0][cof_Col], cof_Col, A);
+        cofactors.push_back(currCofac);
+    }
 
-                if(negative){
-                    cofactor*=-1;
-                    negative=false;
-                }else{
-                    negative=true;
-                }
-			}
-        }
-			///////////////////////
-		}
-	//for 2by2
-	if(size==2){
-		return det2(A);
-	}
+    cofactors.size();
+
+    return 0;
 }
 
 template <typename T>

@@ -113,7 +113,7 @@ int main()
                 ////////////////////////////////////
 
                 ////////////Bullet Move/////////////
-                if(fireRate >= SHOT_DELAY)
+                if(fireRate >= player.gun)
                 {
                     int tempSize = (int)bullets.size();
 

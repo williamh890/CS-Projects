@@ -7,6 +7,7 @@ struct playerInfo
     int yPos = YMAX / 2;
     char model = '@';
     vector<vector<int> > prevPositions;
+    int gun = SHOT_DELAY;
     //Stop Character From going out through walls
 
     playerInfo();

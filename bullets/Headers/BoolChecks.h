@@ -10,9 +10,9 @@ bool levelBounds(int x, int y)
 {
     //#define XMAX 80
     //#define YMAX 25
-    int xCorner = 6;
-    int yCorner = 5;
-    int wallLength = 5;
+    int xCorner = X_CORNER;
+    int yCorner = Y_CORNER;
+    int wallLength = WALL_LENGTH;
     return (x == 0 || x == XMAX - 1 ||
            (y == 0 || y == YMAX - 1) ||
            ((x > XMAX / xCorner && x < (XMAX / xCorner) + wallLength * 2) && y == YMAX / yCorner ) ||

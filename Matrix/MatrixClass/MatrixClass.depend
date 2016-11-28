@@ -47,11 +47,11 @@
 	<math.h>
 	<type_traits>
 
-1480028243 source:c:\users\william\desktop\cs_201\wbhorn\matrix\matrixclass\main.cpp
+1480206609 source:c:\users\william\desktop\cs_201\wbhorn\matrix\matrixclass\main.cpp
 	<iostream>
 	"include\Matrix.h"
 
-1480029204 c:\users\william\desktop\cs_201\wbhorn\matrix\matrixclass\include\matrix.h
+1480206782 c:\users\william\desktop\cs_201\wbhorn\matrix\matrixclass\include\matrix.h
 	<vector>
 	<iostream>
 	<cassert>
