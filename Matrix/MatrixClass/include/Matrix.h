@@ -7,8 +7,9 @@
 #include <cmath> //abs
 #include <utility> //pair, make_pair
 #include <iomanip> //setprecision
-#include <math.h> //round
 #include <type_traits>
+
+
 
 template <typename T>
 class Matrix
@@ -21,7 +22,7 @@ class Matrix
         Matrix(int r = 0, int c = 0, T val = 0);
         Matrix(std::vector<std::vector<T> > data);
 
-        ~Matrix();
+        virtual ~Matrix() = default; //DTOR
         //////////////Operations/////////////
         std::vector<T> operator[](size_t i);
         Matrix& operator+=(const Matrix & b);
@@ -36,6 +37,7 @@ class Matrix
         void addRows(std::vector<T> row);
         template<typename...Rs>
         void addRows(std::vector<T> row, Rs...rows);
+
         //Adding Col/Cols
         void addCol(std::vector<T> col);
         void addCols(std::vector<T> col);
@@ -111,7 +113,7 @@ Matrix<T>& Matrix<T>::operator-=(const Matrix & b)  //Subtraction
 }
 
 template <typename T>
-Matrix<T>& operator-(Matrix<T> a, Matrix<T> b)  //Subtraction
+Matrix<T>& operator-(Matrix<T> a, const Matrix<T> & b)  //Subtraction
 {
     return (a-=b);
 }
@@ -527,11 +529,8 @@ class Cofactor : public Matrix<T>
 public:
     T cofactor;
     int Col;
-    Cofactor(T cofacVal, int cofacCol, Matrix<T> Derived) : cofactor(cofacVal)
+    Cofactor(T cofacVal, int cofacCol, Matrix<T> Derived) : cofactor(cofacVal) , Matrix<T>(Derived.matrixVals)
     {
-        //Pulls in the whole matrix
-        Derived.matrixVals.swap(this->matrixVals);
-
         //Erases the top row
         this->matrixVals.erase(this->matrixVals.begin());
 
@@ -549,25 +548,17 @@ T det(Matrix<T> A){
 	//if matrix isn't square dont bother
     assert(A.col == A.row);
 
-    int sign = 1;
-    T value;
-    T det = 0;
-
-    std::vector<Cofactor<T>> cofactors;
-
     //If a is just a 2X2
     if(A.matrixVals.size() == 2)
     {
         return det2_2(A);
     }
-    //If larger do cofactor expansion
-    for(int cof_Col = 0; cof_Col < A[0].size(); ++cof_Col)
-    {
-        Cofactor<T> currCofac(A[0][cof_Col], cof_Col, A);
-        cofactors.push_back(currCofac);
-    }
 
-    cofactors.size();
+    int sign = 1;
+    T det = 0;
+
+    std::vector<Cofactor<T>> oldCofactors;
+    std::vector<Cofactor<T>> newCofactors;
 
     return 0;
 }
@@ -609,10 +600,5 @@ Matrix<T> transpose(Matrix<T> A)
     return A;
 }
 
-template <typename T>
-Matrix<T>::~Matrix()
-{
-    //dtor
-}
 
 #endif // MATRIX_H

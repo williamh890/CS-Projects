@@ -30,6 +30,10 @@ int main()
 
     cout << det(sqTest) << endl;
 
+//    rref(second).print();
+//    rref(prob30).print();
+//    rref(A).print();
+
     return 0;
 }
 

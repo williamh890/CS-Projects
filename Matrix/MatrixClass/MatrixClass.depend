@@ -33,18 +33,17 @@
 	<iomanip>
 	<math.h>
 
-1479931438 source:c:\users\wbhorn\desktop\new folder\projects\matrix\matrixclass\main.cpp
+1480362337 source:c:\users\wbhorn\desktop\new folder\projects\matrix\matrixclass\main.cpp
 	<iostream>
 	"include\Matrix.h"
 
-1479931891 c:\users\wbhorn\desktop\new folder\projects\matrix\matrixclass\include\matrix.h
+1480362944 c:\users\wbhorn\desktop\new folder\projects\matrix\matrixclass\include\matrix.h
 	<vector>
 	<iostream>
 	<cassert>
 	<cmath>
 	<utility>
 	<iomanip>
-	<math.h>
 	<type_traits>
 
 1480206609 source:c:\users\william\desktop\cs_201\wbhorn\matrix\matrixclass\main.cpp
