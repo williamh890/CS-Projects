@@ -32,6 +32,7 @@ class Matrix
 
         ///////////////////Utility//////////////////
         void resize(int newRowSize, int newColSize, T fillvalue = 0);
+        Matrix<T>& subMatrix(std::pair<int,int> topLeft,std::pair<int,int> botRight);
         //Adding Row/Rows
         void addRow(std::vector<T> row);
         void addRows(std::vector<T> row);
@@ -214,6 +215,20 @@ void Matrix<T>::resize(int newNumRows, int newNumCols, T fillValue)
     //Sets the number of col and rows to there new values
     this->col = newNumCols;
     this->row = newNumRows;
+}
+//Takes a pair of the top left and the bottom Right coordinates and makes a sub matrix
+//First is the row, Second is the column
+template <typename T>
+Matrix<T>& Matrix<T>::subMatrix(std::pair<int,int> topLeft, std::pair<int,int> botRight)
+{
+    //Makes sure that the coords are really top left and top right
+    assert(topLeft.first <= botRight.first);
+    assert(topLeft.second <= botRight.second);
+    //To return a different matrix
+    Matrix<T> subMtx;
+    //Gets ride of rows
+
+
 }
 
 ////////////////Adding cols///////////////
