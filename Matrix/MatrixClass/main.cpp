@@ -12,14 +12,12 @@ int main()
                            { 2, 4, 6, 8},
                            {3, 6, 9, 13}});
 
-    Matrix<double> A({{-2.6,3,-6,6},
-                      {3,-9,22.5,-9},
-                      {3,-7,-8,-5},
-                      {0,0,0,0}});
+    Matrix<double> A({{1,3,1,5},{5,20,6,31},{-2,-1,-1,-4},{2,10,-0.000042,5002.16}});
 
-    Matrix<double> sqTest({{7,0,1},
-                           {0,3,-1},
-                           {-3,4,-2}});
+    Matrix<double> sqTest({{7,-6,1,6},
+                           {2,3,-1,9},
+                           {-3,4,-2,-14},
+                           {2.5,2,7,1}});
 
     Matrix<double>prob30({{1,9,8,0},
                           {6,-6,-12,0},
@@ -28,11 +26,18 @@ int main()
 
     Matrix<int> zeroMatrix(3,5);
 
-    cout << det(sqTest) << endl;
+    Matrix<double> result;
 
-//    rref(second).print();
-//    rref(prob30).print();
-//    rref(A).print();
+    result.print();
+
+    //prob30.subMatrix(std::make_pair(0,0), std::make_pair(1,1));
+
+
+    rref(second).print();
+    rref(prob30).print();
+    rref(A).print();
+
+    cout << det(sqTest) << endl;
 
     return 0;
 }
