@@ -10,7 +10,6 @@
 #include <sstream> //ostringstream
 #include <string> //string
 
-
 template <typename T>
 class Matrix
 {
@@ -18,13 +17,14 @@ class Matrix
         std::vector<std::vector<T> > _matrixVals;
         unsigned int _rows; //Number of rows
         unsigned int _cols; //Number of columns
-        ////////////////CTORS//////////////
-        //Defaults to a
-        Matrix(int r = 1, int c = 1, T val = 0);
+        ///////////////////CTORS////////////////////
+
+        Matrix() = default;
+        Matrix(int r, int c, T val = 0);
         Matrix(std::vector<std::vector<T> > data);
 
         virtual ~Matrix() = default; //DTOR
-        //////////////Operations/////////////
+        //////////////Operations////////////////////
         std::vector<T> operator[](size_t i);
         Matrix& operator+=(const Matrix & b);
         Matrix& operator-=(const Matrix & b);
@@ -33,7 +33,7 @@ class Matrix
 
         ///////////////////Utility//////////////////
         void resize(int newRowSize, int newColSize, T fillvalue = 0);
-        void subMatrix(std::pair<int,int> topLeft,std::pair<int,int> botRight);
+        void subMatrix(std::pair<int,int> topLeft,std::pair<int,int> botRight); //Need to make
         //Adding Row/Rows
         void addRow(std::vector<T> row);
         void addRows(std::vector<T> row);
@@ -49,14 +49,27 @@ class Matrix
         void replacement(int curRow, int otherRow, T otherRowScale);
         void interchange(int row1, int row2);
         void scale(int row, T scale);
-        ////////////////Display/////////////////
+        ////////////////Display//////////////////////
         void print() const;
+
+        //////////Calculation Functions/////////////
+   /*********************************************************
+    *  Matrix<T> rref(Matrix<T> A, bool debug = false);     *
+    *  Matrix<T> invert(Matrix<T> A)                        *
+    *  T det(Matrix<T> A)                                   *
+    *  Matrix<T> transpose(Matrix<T> A)                     *
+    *********************************************************/
 
 };
 ///////////////////////CTORS/////////////////////////
+//Construct a matrix of a desired size
+
 template <typename T>
 Matrix<T>::Matrix(int r, int c, T val) :  _rows(r), _cols(c)
 {
+    assert(r > 0);
+    assert(c > 0);
+
     _matrixVals.resize(r);
     for(int i = 0; i < (int)_matrixVals.size(); ++i)
     {
@@ -65,7 +78,7 @@ Matrix<T>::Matrix(int r, int c, T val) :  _rows(r), _cols(c)
     _rows = (int)_matrixVals.size();
     _cols = (int)_matrixVals[0].size();
 }
-
+//Construct a matrix with a vector of vectors
 template <typename T>
 Matrix<T>::Matrix(std::vector<std::vector<T> > data) : _matrixVals(data)
 {
@@ -75,7 +88,7 @@ Matrix<T>::Matrix(std::vector<std::vector<T> > data) : _matrixVals(data)
 /////////////////////////////////////////////////////////////
 
 
-/////////////////////////////OPERATORS////////////////////////
+//////////////////////////////////////////////////////////////////////////OPERATORS////////////////////////////////////////////////////////////////////
 template <typename T>
 std::vector<T> Matrix<T>::operator[](size_t i)  //Indexing
 {
@@ -85,9 +98,9 @@ std::vector<T> Matrix<T>::operator[](size_t i)  //Indexing
 template <typename T>
 Matrix<T>& Matrix<T>::operator+=(const Matrix & b)  //Addition
 {
-    for(int r = 0; r < this->_rows; ++r)
+    for(int r = 0; r < (int)this->_rows; ++r)
     {
-        for(int c = 0; c < this->_cols; ++c)
+        for(int c = 0; c < (int)this->_cols; ++c)
         {
             this->_matrixVals[r][c] += b._matrixVals[r][c];
         }
@@ -104,9 +117,9 @@ Matrix<T>& operator+(Matrix<T> a, const Matrix<T> & b)  //Addition
 template <typename T>
 Matrix<T>& Matrix<T>::operator-=(const Matrix & b)  //Subtraction
 {
-    for(int r = 0; r < this->_rows; ++r)
+    for(int r = 0; r < (int)this->_rows; ++r)
     {
-        for(int c = 0; c < this->_cols; ++c)
+        for(int c = 0; c < (int)this->_cols; ++c)
         {
             this->_matrixVals[r][c] -= b._matrixVals[r][c];
         }
@@ -123,9 +136,9 @@ Matrix<T>& operator-(Matrix<T> a, const Matrix<T> & b)  //Subtraction
 template <typename T>
 Matrix<T>& Matrix<T>::operator*=(T scalar)  //Scalar Multiplication
 {
-    for(int r = 0; r < this->_rows; ++r)
+    for(int r = 0; r < (int)this->_rows; ++r)
     {
-        for(int c = 0; c < this->_cols; ++c)
+        for(int c = 0; c < (int)this->_cols; ++c)
         {
             this->_matrixVals[r][c] *= scalar;
         }
@@ -140,24 +153,28 @@ Matrix<T>& operator*(Matrix<T> a, T scalar) //Scalar Multiplication
 }
 
 template <typename T>
+Matrix<T>& operator*(T scalar, Matrix<T> a) //Scalar Multiplication
+{
+    return (a*=scalar);
+}
+
+template <typename T>
 Matrix<T>& Matrix<T>::operator*=(Matrix<T> & B) //Matrix Multiplication
 {
     assert(this->_cols == B._rows);
     //Matrix multiplication A*B
     Matrix<T> multResult(this->_rows,B._cols,0);
 
-    std::cout << this->_rows << " " << B._cols << std::endl;
 
     T slot;
-    for(int r = 0; r < multResult._rows; ++r)
+    for(int r = 0; r < (int)multResult._rows; ++r)
     {
         slot = 0;
-        for(int c = 0; c < multResult._cols; ++c)
+        for(int c = 0; c < (int)multResult._cols; ++c)
         {
             slot = 0;
-            for(int i = 0; i < B._rows; ++i)
+            for(int i = 0; i < (int)B._rows; ++i)
             {
-                std::cout << B._rows << std::endl;
                 slot += (*this)._matrixVals[r][i] * B._matrixVals[i][c];
             }
             multResult._matrixVals[r][c] = slot;
@@ -177,7 +194,7 @@ Matrix<T>& operator*(Matrix<T> a, Matrix<T> b)  //Matrix Multiplication
 }
 ///////////////////////////////////////////////////////////////////
 
-///////////////////////////FUCNTIONALITY///////////////////////////
+//////////////////////////////////////////////////////////////FUCNTIONALITY////////////////////////////////////////////////////////////////
 
 //Resize a matrix by adding rows/cols full of an indicated value
 template <typename T>
@@ -185,7 +202,7 @@ void Matrix<T>::resize(int newNumRows, int newNumCols, T fillValue)
 {
     //std::vector<std::vector<T> > data
 
-    if(newNumCols > this->_cols)
+    if(newNumCols > (int)this->_cols)
     {
         //Add new values (zero by default) to the end of all row vectors
         for(auto & r : this->_matrixVals)
@@ -193,7 +210,7 @@ void Matrix<T>::resize(int newNumRows, int newNumCols, T fillValue)
             r.insert(r.end(), (newNumCols - this->_cols), fillValue);
         }
     }
-    if(newNumCols < this->_cols)
+    if(newNumCols < (int)this->_cols)
     {
         //Remove appropriate number of ending rows
         //Erase the ending values
@@ -202,13 +219,13 @@ void Matrix<T>::resize(int newNumRows, int newNumCols, T fillValue)
             r.resize(newNumCols);
         }
     }
-    if(newNumRows > this->_rows)
+    if(newNumRows > (int)this->_rows)
     {
         //Makes new rows and fills them with a desired value
         std::vector<T> newRows(newNumCols, fillValue);
         this->_matrixVals.insert(_matrixVals.end(), (newNumRows - this->_rows), newRows);
     }
-    if(newNumRows < this->_rows)
+    if(newNumRows < (int)this->_rows)
     {
         //Resize the matrix, deletes rows to make space
         this->_matrixVals.resize(newNumRows);
@@ -221,24 +238,13 @@ void Matrix<T>::resize(int newNumRows, int newNumCols, T fillValue)
 //Modifies the original matrix
 //Takes a pair of the top left and the bottom Right coordinates and makes a sub matrix
 //First is the row, Second is the column
-template <typename T>
-void Matrix<T>::subMatrix(std::pair<int,int> topLeft, std::pair<int,int> botRight)
-{
-    //Makes sure that the coords are really top left and top right
-    assert(topLeft.first <= botRight.first);
-    assert(topLeft.second <= botRight.second);
-
-    //Gets ride of rows
-
-
-}
 
 ////////////////Adding cols///////////////
 template <typename T>
 void Matrix<T>::addCol(std::vector<T> col)
 {
     assert(col.size() == _matrixVals.size());
-    for(int i = 0; i < _matrixVals.size(); ++i)
+    for(int i = 0; i < (int)_matrixVals.size(); ++i)
     {
         _matrixVals[i].push_back(col[i]);
     }
@@ -283,33 +289,17 @@ void Matrix<T>::addRows(std::vector<T> row, Rs...rows)
     addRow(row);
     addRows(rows...);
 }
-////////////////////////////////////////
+///////////////////////////////////////////
 
-//////////////////ref//////////////////
-//Row reduce a matrix to reduced echelon form
-template <typename T>
-bool correct(Matrix<T> A ,std::vector<std::pair<int,int> > pivotPositions)
-{
-    for(int i = 0; i < pivotPositions.size(); ++i)
-    {
-        int currRow = pivotPositions[i].first;
-        int currCol = pivotPositions[i].second;
+///////////////////////////////////////////////////////////////////////////////////////////Elementary Row Operations///////////////////////////////////////////////////////////
 
-        if(A._matrixVals[currRow][currCol] != 1) return false;
-        for(int r = currRow - 1; r >= 0; --r)
-        {
-            if(A._matrixVals[r][currCol] != 0) return false;
-        }
-    }
-    return true;
-}
-
+//Swqp two rows
 template <typename T>
 void Matrix<T>::interchange(int row1, int row2)
 {
     _matrixVals[row1].swap(_matrixVals[row2]);
 }
-
+//scales a row by a value
 template <typename T>
 void Matrix<T>::scale(int rowNum, T scale)
 {
@@ -318,10 +308,9 @@ void Matrix<T>::scale(int rowNum, T scale)
     for(auto & r : _matrixVals[rowNum])
     {
         r *= scale;
-        //r = ceil(r * pow(10,DECIMAL_PRECISION)) / pow(10,DECIMAL_PRECISION);
     }
 }
-//replace
+//replace curRow row with the sum of that row plus the multiple of another row
 template <typename T>
 void Matrix<T>::replacement(int curRow, int otherRow, T otherRowScale)  //Current row gets changed
 {
@@ -338,11 +327,11 @@ bool zeroColumn(Matrix<T> A, int currPivotRow, int currPivotCol)
 {
     //Assumes zero column
     bool isZeroCol = true;
-
+    //Runs through column and checks if any value is not zero
     for(int r = currPivotRow; r < (int)A._matrixVals.size(); ++r)
     {
         //If a value is not zero, then break
-        if(A[r][currPivotCol] != 0)
+        if(!(A[r][currPivotCol] > -1e-10 && A[r][currPivotCol] < 1e-10))
         {
             isZeroCol = false;
             break;
@@ -355,10 +344,10 @@ template <typename T>
 bool zeroRow(Matrix<T> A, int currPivotRow)
 {
     bool isZeroRow = true;
-
+    //Runs through row and check is any value is not zero
     for(int c = 0; c < (int)A[0].size(); ++c)
     {
-        if(A[currPivotRow][c] != 0)
+        if(!(A[currPivotRow][c] > -1e-10 && A[currPivotRow][c] < 1e-10))
         {
             isZeroRow = false;
             break;
@@ -366,7 +355,7 @@ bool zeroRow(Matrix<T> A, int currPivotRow)
     }
     return isZeroRow;
 }
-//Gives the position of the largest value in that column
+//Gives the row position of the largest value in that column
 template <typename T>
 int largest_value_position(Matrix<T> A, int currPivotRow, int currPivotCol, int exitRow)
 {
@@ -430,12 +419,12 @@ void zero_out_above_and_below(Matrix<T> & A, int currPivotRow, int currPivotCol,
     {
         //skips zeroing out pivot row, or if value already zero
         if(r == currPivotRow) continue;
-        if(A[r][currPivotCol] == 0) continue;
+        if((A[r][currPivotCol] > -1e-10 && A[r][currPivotCol] < 1e-10)) continue;
 
         A.replacement(r, currPivotRow, -A[r][currPivotCol]);
     }
 }
-/////////////////ROW REDUCED ECHELON FORM//////////////////
+////////////////////////////////////////////////////////////////////ROW REDUCED ECHELON FORM////////////////////////////////////////////////////////////////////
 template <typename T>
 Matrix<T> rref(Matrix<T> A, bool debug = false)
 {
@@ -445,13 +434,17 @@ Matrix<T> rref(Matrix<T> A, bool debug = false)
 
     //By default exits at the last row
     int exitRow = (int)A._matrixVals.size();
-
     bool isDone = false;
 
     if(debug) A.print();
 
+    int pass = 1;
+
     while(currPivotRow != exitRow)
     {
+        if(debug) std::cout << "PASS " << pass << std::endl;
+
+        //Checks for a zero row
         while(true)
         {
             //If row of zeros, move to the bottom and add 1 to the exit row
@@ -477,13 +470,14 @@ Matrix<T> rref(Matrix<T> A, bool debug = false)
         while(true)
         {
             if(zeroColumn(A,currPivotRow,currPivotCol)) ++currPivotCol;
-            else break;
+            if(currPivotCol == (int)A._cols || !zeroColumn(A,currPivotRow,currPivotCol)) break;
         }
-        //finds the largest value in the pivot column
+        //finds the row position largest value in the pivot column
         int largestValueRow = largest_value_position(A,currPivotRow,currPivotCol, exitRow); //Returns the row that has the largest value
 
         if(debug) std::cout << "LVR: " << largestValueRow << std::endl;
         if(debug) std::cout << "PR: " << currPivotRow << " " << "PC: " << currPivotCol << std::endl;
+        if(debug) std::cout << "EXIT R: " << exitRow << std::endl;
 
         //Move the largest value row to the top
         move_pivot_to_top(A, currPivotRow, largestValueRow);
@@ -496,17 +490,21 @@ Matrix<T> rref(Matrix<T> A, bool debug = false)
 
         zero_out_above_and_below(A, currPivotRow, currPivotCol, exitRow);
         ++currPivotRow;
+        ++pass;
     }
     return A;
 }
-/////////////////////////////////
+/////////////////////END RREF////////////////////
+
+////////////////////////////////////////////////////////////////////INVERT//////////////////////////////////////////////////////////////////
+//Adds id matrix to the left size of matrix
 template <typename T>
 void add_id(Matrix<T> & A)
 {
     //Creates vector of zeros
     std::vector<T> id_Row(A[0].size(), 0);
     //Loops through all the rows
-    for(int r = 0, id_c = 0; r < A._matrixVals.size(); ++r, ++id_c)
+    for(int r = 0, id_c = 0; r < (int)A._matrixVals.size(); ++r, ++id_c)
     {
         //Puts a one in the vec
         id_Row[id_c] = 1;
@@ -517,30 +515,41 @@ void add_id(Matrix<T> & A)
     }
 }
 
+//Remove id from the right side of matrix
 template <typename T>
 void remove_id(Matrix<T> & A)
 {
-    for(int r = 0; r < A._matrixVals.size(); ++r)
+    for(int r = 0; r < (int)A._matrixVals.size(); ++r)
     {
         A._matrixVals[r].erase(A._matrixVals[r].begin(), A._matrixVals[r].begin() + (A[r].size()/2));
     }
 }
 
+//Find the inverse of a matrix
 template <typename T>
 Matrix<T> invert(Matrix<T> A)
 {
+    //Make sure the matrix is actually invertible
+    assert(det(A) != 0);
+
     add_id(A);
     A = rref(A);
     remove_id(A);
     return A;
 }
+////////////////END INVERSE////////////////
 
+////////////////DETERMINANT/////////////////////
+
+//Find the det of a 2x2 matrix
 template <typename T>
 T det2_2(Matrix<T> A)
 {
     return ((A[0][0] * A[1][1]) - (A[0][1] * A[1][0]));
 }
 
+//Matrix class but with a cofactor value associated with it
+//Ctor used to create smaller cofactors from larger ones
 template <typename T>
 class Cofactor : public Matrix<T>
 {
@@ -562,7 +571,8 @@ public:
     }
 
 };
-
+//Break a martix down into smaller cofactors
+//Used for the initial cofactor of the input matrix
 template <typename T>
 std::vector<Cofactor<T> > cofactor_matrix(const Matrix<T> & A)
 {
@@ -576,6 +586,8 @@ std::vector<Cofactor<T> > cofactor_matrix(const Matrix<T> & A)
     return cofactors;
 }
 
+//Break a martix down into smaller cofactors
+//This version is for cofactoring cofactors.
 template <typename T>
 std::vector<Cofactor<T> > cofactor_matrix(const Cofactor<T> & A)
 {
@@ -588,6 +600,9 @@ std::vector<Cofactor<T> > cofactor_matrix(const Cofactor<T> & A)
     }
     return cofactors;
 }
+
+//Sum up the final determinate value from all the
+//2x2 cofactors
 template <typename T>
 T sum_cofactor_dets(std::vector<Cofactor<T> > cofactors)
 {
@@ -600,9 +615,10 @@ T sum_cofactor_dets(std::vector<Cofactor<T> > cofactors)
     return sum;
 }
 
-//////////Determinant////////////
+////////////////////////////////////////////////////////////////////////////////det/////////////////////////////////////////////////////////////////////
 template <typename T>
-T det(Matrix<T> A){
+T det(Matrix<T> A)
+{
 	//if matrix isn't square dont bother
     assert(A._cols == A._rows);
 
@@ -646,15 +662,16 @@ void Matrix<T>::print() const
     if(this->_rows == 0 || this->_cols == 0) {std::cout << std::endl << "[Empty Matrix]" << std::endl; return;}
 
     std::cout << std::endl;
+
     for(auto r : _matrixVals)
     {
         std::cout << std::setw(DECIMAL_PRECISION);
+
         for(auto c : r )
         {
-            if(c > -1e-10 && c < 1e-10)
-            {
-                c = 0;
-            }
+            //Print error from division more cleanly
+            if(c > -1e-10 && c < 1e-10) c = 0;
+
             //fix for -0
             std::ostringstream zeroCheck;
             zeroCheck << c;
@@ -674,8 +691,8 @@ Matrix<T> transpose(Matrix<T> A)
 {
     Matrix<T> A_t(A._cols, A._rows);    //Makes the right sized transposed vector
 
-    for(int i = 0; i < A._matrixVals.size(); ++i)
-        for(int j = 0; j < A._matrixVals[0].size(); ++j)
+    for(int i = 0; i < (int) A._matrixVals.size(); ++i)
+        for(int j = 0; j < (int)A._matrixVals[0].size(); ++j)
             A_t._matrixVals[j][i] = A._matrixVals[i][j];  //Switch the rows with the cols
 
     A_t._rows = (int)A_t._matrixVals.size();
@@ -684,6 +701,5 @@ Matrix<T> transpose(Matrix<T> A)
 
     return A;
 }
-
 
 #endif // MATRIX_H
