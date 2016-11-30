@@ -430,7 +430,7 @@ void zero_out_above_and_below(Matrix<T> & A, int currPivotRow, int currPivotCol,
 }
 ////////////////////////////////////////////////////////////////////ROW REDUCED ECHELON FORM////////////////////////////////////////////////////////////////////
 template <typename T>
-Matrix<T> rref(Matrix<T> A, bool debug = false)
+Matrix<T> rref(Matrix<T> A)
 {
     //Starts at the top left of the matrix
     int currPivotCol = 0;
@@ -439,15 +439,9 @@ Matrix<T> rref(Matrix<T> A, bool debug = false)
     //By default exits at the last row
     int exitRow = (int)A._matrixVals.size();
     bool isDone = false;
-
-    if(debug) A.print();
-
-    int pass = 1;
-
+    //Row reduction
     while(currPivotRow != exitRow)
     {
-        if(debug) std::cout << "PASS " << pass << std::endl;
-
         //Checks for a zero row
         while(true)
         {
@@ -468,8 +462,6 @@ Matrix<T> rref(Matrix<T> A, bool debug = false)
         }
         if(isDone) break;
 
-        if(debug) A.print();
-
         //If all zeros in pivot position
         while(true)
         {
@@ -477,24 +469,16 @@ Matrix<T> rref(Matrix<T> A, bool debug = false)
             if(currPivotCol == (int)A._cols || !zeroColumn(A,currPivotRow,currPivotCol)) break;
         }
         //finds the row position largest value in the pivot column
-        int largestValueRow = largest_value_position(A,currPivotRow,currPivotCol, exitRow); //Returns the row that has the largest value
-
-        if(debug) std::cout << "LVR: " << largestValueRow << std::endl;
-        if(debug) std::cout << "PR: " << currPivotRow << " " << "PC: " << currPivotCol << std::endl;
-        if(debug) std::cout << "EXIT R: " << exitRow << std::endl;
-
+        //Returns the row that has the largest value
+        int largestValueRow = largest_value_position(A,currPivotRow,currPivotCol, exitRow);
         //Move the largest value row to the top
         move_pivot_to_top(A, currPivotRow, largestValueRow);
 
-        if(debug) A.print();
-
         scale_pivot_row_to_1(A, currPivotRow, currPivotCol);
 
-        if(debug) A.print();
-
         zero_out_above_and_below(A, currPivotRow, currPivotCol, exitRow);
+
         ++currPivotRow;
-        ++pass;
     }
     return A;
 }
@@ -637,11 +621,8 @@ T det(Matrix<T> A)
     std::vector<Cofactor<T> > newCofactors;
 
     //Break down until all the cofactors are 2X2
-    while(true)
+    while(oldCofactors[0]._rows != 2)
     {
-        //all cofactor matrices are 2x2
-        if(oldCofactors[0]._rows == 2) break;
-
         //Runs through all the cofactors and cofactors them
         for(int i = 0; i < (int)oldCofactors.size(); ++i)
         {
@@ -717,12 +698,11 @@ void Matrix<T>::print() const
     }
     std::cout << std::endl;
 }
+//Returns a pair with the dimensions of the matrix (number of rows,number of columns)
 template <typename T>
 std::pair<unsigned int, unsigned int> Matrix<T>::size()
 {
     return std::make_pair(this->_rows,this->_cols);
 }
-
-
 
 #endif // MATRIX_H

@@ -38,7 +38,7 @@
 	<iostream>
 	"include\Matrix.h"
 
-1480534103 c:\users\wbhorn\desktop\new folder\projects\matrix\matrixclass\include\matrix.h
+1480535031 c:\users\wbhorn\desktop\new folder\projects\matrix\matrixclass\include\matrix.h
 	<vector>
 	<iostream>
 	<cassert>
@@ -71,7 +71,7 @@
 	<iostream>
 	<vector>
 
-1480533918 source:c:\users\wbhorn\desktop\new folder\projects\matrix\matrixclass\matrixtest.cpp
+1480534410 source:c:\users\wbhorn\desktop\new folder\projects\matrix\matrixclass\matrixtest.cpp
 	"include\matrix.h"
 	<iostream>
 	<vector>
