@@ -66,6 +66,10 @@ int main()
     cout << "A[0][1] = " << A[0][1] << endl;
     cout << "A[1][1] = " << A[1][1] << endl << endl;
 
+    cout << "S = A.size()" << endl;
+    cout << "\tS.first  (num rows) = " << A.size().first << endl
+         << "\tS.second (num cols) = " << A.size().second << endl << endl;
+
     cout << "iResult = A + (2*A)" << endl;
     iResult = A + (2*A);
     iResult.print();
@@ -149,7 +153,7 @@ int main()
 
     cout << "A";
     A.print();
-    cout << "det(A) = " << det(A) << endl;
+    cout << "det(A) = " << det(A) << endl << endl;
 
     cout << "T";
     T.print();

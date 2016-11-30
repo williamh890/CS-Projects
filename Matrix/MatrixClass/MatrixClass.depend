@@ -38,14 +38,15 @@
 	<iostream>
 	"include\Matrix.h"
 
-1480365843 c:\users\wbhorn\desktop\new folder\projects\matrix\matrixclass\include\matrix.h
+1480534103 c:\users\wbhorn\desktop\new folder\projects\matrix\matrixclass\include\matrix.h
 	<vector>
 	<iostream>
 	<cassert>
 	<cmath>
 	<utility>
 	<iomanip>
-	<type_traits>
+	<sstream>
+	<string>
 
 1480206609 source:c:\users\william\desktop\cs_201\wbhorn\matrix\matrixclass\main.cpp
 	<iostream>
@@ -66,6 +67,11 @@
 	"include\Matrix.h"
 
 1480478363 source:c:\users\william\desktop\cs_201\wbhorn\matrix\matrixclass\matrixtest.cpp
+	"include\matrix.h"
+	<iostream>
+	<vector>
+
+1480533918 source:c:\users\wbhorn\desktop\new folder\projects\matrix\matrixclass\matrixtest.cpp
 	"include\matrix.h"
 	<iostream>
 	<vector>

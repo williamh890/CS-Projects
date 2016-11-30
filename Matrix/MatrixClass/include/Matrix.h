@@ -27,7 +27,7 @@ class Matrix
         ///////////////////CTORS////////////////////
 
         Matrix() = default;
-        Matrix(int r, int c, T val = 0);
+        Matrix(unsigned int r,unsigned int c, T val = 0);
         Matrix(std::vector<std::vector<T> > data);
 
         virtual ~Matrix() = default; //DTOR
@@ -40,7 +40,6 @@ class Matrix
 
         ///////////////////Utility//////////////////
         void resize(int newRowSize, int newColSize, T fillvalue = 0);
-        void subMatrix(std::pair<int,int> topLeft,std::pair<int,int> botRight); //Need to make
         //Adding Row/Rows
         void addRow(std::vector<T> row);
         void addRows(std::vector<T> row);
@@ -58,6 +57,7 @@ class Matrix
         void scale(int row, T scale);
         ////////////////Display//////////////////////
         void print() const;
+        std::pair<unsigned int, unsigned int> size();
 
         //////////Calculation Functions/////////////
    /*********************************************************
@@ -72,7 +72,7 @@ class Matrix
 //Construct a matrix of a desired size
 
 template <typename T>
-Matrix<T>::Matrix(int r, int c, T val) :  _rows(r), _cols(c)
+Matrix<T>::Matrix(unsigned int r,unsigned int c, T val) :  _rows(r), _cols(c)
 {
     assert(r > 0);
     assert(c > 0);
@@ -176,7 +176,6 @@ Matrix<T>& Matrix<T>::operator*=(Matrix<T> & B) //Matrix Multiplication
     T slot;
     for(int r = 0; r < (int)multResult._rows; ++r)
     {
-        slot = 0;
         for(int c = 0; c < (int)multResult._cols; ++c)
         {
             slot = 0;
@@ -659,6 +658,23 @@ T det(Matrix<T> A)
     return sum_cofactor_dets(oldCofactors);
 }
 
+//////////////Transpose///////////////
+template <typename T>
+Matrix<T> transpose(Matrix<T> A)
+{
+    Matrix<T> A_t(A._cols, A._rows);    //Makes the right sized transposed matrix
+
+    for(int i = 0; i < (int) A._matrixVals.size(); ++i)
+        for(int j = 0; j < (int)A._matrixVals[0].size(); ++j)
+            A_t._matrixVals[j][i] = A._matrixVals[i][j];  //Switch the rows with the cols
+
+    A_t._rows = (int)A_t._matrixVals.size();
+    A_t._cols = (int)A_t._matrixVals[0].size();
+    A = A_t;    //So the address can be returned properly
+
+    return A;
+}
+
 //Print the matrix out all pretty like
 template <typename T>
 void Matrix<T>::print() const
@@ -683,6 +699,7 @@ void Matrix<T>::print() const
 
     for(auto r : _matrixVals)
     {
+        //if(longestValue > 5) std::cout << std::setprecision(longestValue - 1);
         std::cout << std::setw(longestValue);
         for(auto c : r )
         {
@@ -694,29 +711,18 @@ void Matrix<T>::print() const
             zeroCheck << c;
             std::string print = zeroCheck.str();
             if(print == "-0") print = "0";
-
             std::cout << std::setw(longestValue) << print;
         }
         std::cout << std::endl;
     }
     std::cout << std::endl;
 }
-
-//////////////Transpose///////////////
 template <typename T>
-Matrix<T> transpose(Matrix<T> A)
+std::pair<unsigned int, unsigned int> Matrix<T>::size()
 {
-    Matrix<T> A_t(A._cols, A._rows);    //Makes the right sized transposed matrix
-
-    for(int i = 0; i < (int) A._matrixVals.size(); ++i)
-        for(int j = 0; j < (int)A._matrixVals[0].size(); ++j)
-            A_t._matrixVals[j][i] = A._matrixVals[i][j];  //Switch the rows with the cols
-
-    A_t._rows = (int)A_t._matrixVals.size();
-    A_t._cols = (int)A_t._matrixVals[0].size();
-    A = A_t;    //So the address can be returned properly
-
-    return A;
+    return std::make_pair(this->_rows,this->_cols);
 }
+
+
 
 #endif // MATRIX_H
