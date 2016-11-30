@@ -3,19 +3,35 @@
 //10.29.2016
 //Matrix class
 //Group: William Horn, Orion Lust, Kyle Tam
+
 #ifndef MATRIX_H
 #define MATRIX_H
 
-#include <vector> //vector
-#include <iostream> //cout
-#include <cassert> //assert
-#include <cmath> //abs, round
-#include <utility> //pair, make_pair
-#include <iomanip> //setprecision
-#include <sstream> //ostringstream
-#include <string> //string
+#include <vector>    //vector
+#include <iostream>  //cout
+#include <cassert>   //assert
+#include <cmath>     //abs, round
+#include <utility>   //pair, make_pair
+#include <iomanip>   //setprecision
+#include <sstream>   //ostringstream
+#include <string>    //string
 
 #define ZERO_LIMIT (1e-10)
+
+/*
+    I had never done a project this big before, and I soon realized that
+    the choices made in the beginning of the class's creation greatly
+    affect the later functions. If I were to make the class I would have made
+    _matrixVals, _rows, and _cols protected and used functions to access them.
+    Also, I need to find a way to hide the internal sub-functions used in the calculation
+    functions from the outside world.
+
+    This project is in no way complete, and as I am quickly finding out
+    with coding, they never are, but you have to call it somewhere so...
+    here you go.
+
+    Enjoy!
+*/
 
 template <typename T>
 class Matrix
@@ -67,7 +83,7 @@ class Matrix
     *  Matrix<T> transpose(Matrix<T> A)                     *
     *********************************************************/
 
-};
+}; //END MATRIX
 ///////////////////////CTORS/////////////////////////
 //Construct a matrix of a desired size
 
@@ -186,6 +202,7 @@ Matrix<T>& Matrix<T>::operator*=(Matrix<T> & B) //Matrix Multiplication
             multResult._matrixVals[r][c] = slot;
         }
     }
+
     //Copies the data from the temp matrix into the this matrix
     //Only way to return without getting std::bad_alloc
     (*this)._matrixVals.swap(multResult._matrixVals);
