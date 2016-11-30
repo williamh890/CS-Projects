@@ -1,3 +1,8 @@
+//matrix.h
+//William Horn
+//10.29.2016
+//Matrix class
+//Group: William Horn, Orion Lust, Kyle Tam
 #ifndef MATRIX_H
 #define MATRIX_H
 
@@ -9,6 +14,8 @@
 #include <iomanip> //setprecision
 #include <sstream> //ostringstream
 #include <string> //string
+
+#define ZERO_LIMIT (1e-10)
 
 template <typename T>
 class Matrix
@@ -331,7 +338,7 @@ bool zeroColumn(Matrix<T> A, int currPivotRow, int currPivotCol)
     for(int r = currPivotRow; r < (int)A._matrixVals.size(); ++r)
     {
         //If a value is not zero, then break
-        if(!(A[r][currPivotCol] > -1e-10 && A[r][currPivotCol] < 1e-10))
+        if(!(A[r][currPivotCol] > -ZERO_LIMIT && A[r][currPivotCol] < ZERO_LIMIT))
         {
             isZeroCol = false;
             break;
@@ -347,7 +354,7 @@ bool zeroRow(Matrix<T> A, int currPivotRow)
     //Runs through row and check is any value is not zero
     for(int c = 0; c < (int)A[0].size(); ++c)
     {
-        if(!(A[currPivotRow][c] > -1e-10 && A[currPivotRow][c] < 1e-10))
+        if(!(A[currPivotRow][c] > -ZERO_LIMIT && A[currPivotRow][c] < ZERO_LIMIT))
         {
             isZeroRow = false;
             break;
@@ -403,8 +410,6 @@ void scale_pivot_row_to_1(Matrix<T> & A, int currPivotRow, int currPivotCol)
     else if(pivotPositionVal  > 0) rowScale =  1 / pivotPositionVal;
     else    /*value is negative*/  rowScale = -1 / std::abs(pivotPositionVal);
 
-    //rowScale = ceil(rowScale * pow(10,DECIMAL_PRECISION)) / pow(10,DECIMAL_PRECISION);
-
     //Performs the operation
     A.scale(currPivotRow, rowScale);
     //Pivot position should be 1
@@ -419,7 +424,7 @@ void zero_out_above_and_below(Matrix<T> & A, int currPivotRow, int currPivotCol,
     {
         //skips zeroing out pivot row, or if value already zero
         if(r == currPivotRow) continue;
-        if((A[r][currPivotCol] > -1e-10 && A[r][currPivotCol] < 1e-10)) continue;
+        if((A[r][currPivotCol] > -ZERO_LIMIT && A[r][currPivotCol] < ZERO_LIMIT)) continue;
 
         A.replacement(r, currPivotRow, -A[r][currPivotCol]);
     }
@@ -453,7 +458,7 @@ Matrix<T> rref(Matrix<T> A, bool debug = false)
                 zero_row_to_bottom(A, currPivotRow);
                 --exitRow;
             }
-            //Makes sure the next row isnt also a zero row
+            //Makes sure the next row isn't also a zero row
             if(!zeroRow(A,currPivotRow)) break;
             //Checks to see if done
             if(currPivotRow >= exitRow)
@@ -654,31 +659,43 @@ T det(Matrix<T> A)
     return sum_cofactor_dets(oldCofactors);
 }
 
+//Print the matrix out all pretty like
 template <typename T>
 void Matrix<T>::print() const
 {
-    const int DECIMAL_PRECISION = 3;
-
     if(this->_rows == 0 || this->_cols == 0) {std::cout << std::endl << "[Empty Matrix]" << std::endl; return;}
 
     std::cout << std::endl;
+    int longestValue = 2;
+    //Find the longest value in matrix and setw according to that
+    for(auto r : _matrixVals)
+    {
+         for(auto c : r)
+        {
+            std::ostringstream lengCheck;
+            if(c > -ZERO_LIMIT && c < ZERO_LIMIT) c = 0;
+            lengCheck << c;
+            int length = lengCheck.str().size();
+            if(length > longestValue) longestValue = length;
+        }
+    }
+    longestValue += 1;
 
     for(auto r : _matrixVals)
     {
-        std::cout << std::setw(DECIMAL_PRECISION);
-
+        std::cout << std::setw(longestValue);
         for(auto c : r )
         {
-            //Print error from division more cleanly
-            if(c > -1e-10 && c < 1e-10) c = 0;
+            //Assumes extremely small numbers to be zero
+            if(c > -ZERO_LIMIT && c < ZERO_LIMIT) c = 0;
 
-            //fix for -0
+            //prints -0 as 0
             std::ostringstream zeroCheck;
             zeroCheck << c;
             std::string print = zeroCheck.str();
             if(print == "-0") print = "0";
 
-            std::cout << std::setw(DECIMAL_PRECISION) << print << " ";
+            std::cout << std::setw(longestValue) << print;
         }
         std::cout << std::endl;
     }
@@ -689,7 +706,7 @@ void Matrix<T>::print() const
 template <typename T>
 Matrix<T> transpose(Matrix<T> A)
 {
-    Matrix<T> A_t(A._cols, A._rows);    //Makes the right sized transposed vector
+    Matrix<T> A_t(A._cols, A._rows);    //Makes the right sized transposed matrix
 
     for(int i = 0; i < (int) A._matrixVals.size(); ++i)
         for(int j = 0; j < (int)A._matrixVals[0].size(); ++j)

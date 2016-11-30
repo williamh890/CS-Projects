@@ -1,14 +1,24 @@
-#include <iostream>
-#include "include\Matrix.h"
+//matrixtest.h
+//William Horn
+//11.29.2016
+//Demo of matrix class features
+//Group: William Horn, Orion Lust, Kyle Tam
 
-using namespace std;
+#include "include\matrix.h"
+
+#include <iostream>
+using std::cout;
+using std::endl;
+#include <vector>
+using std::vector;
+
 
 int main()
 {
     Matrix<double> Default(2,2,1);
 
-    Matrix<double> A({{ 1, 2 },
-                      { 4, 5 }});
+    Matrix<int> A({{ 1, 2 },
+                   { 4, 5 }});
 
     Matrix<float> T({{ 1, 3, 5 },
                      { 2, 1, 1 },
@@ -43,16 +53,25 @@ int main()
                            { -5,  1,   6, 0 },
                            {  1,  0,  -1, 0 }});
 
-    Matrix<int> Z(3,5);
+    Matrix<long long> Z(3,5);
 
+    Matrix<int> iResult;
     Matrix<double> result;
 
     cout << "|**********MATRIX CLASS DEMO***********|\n" << endl;
-    //operators
 
-    cout << "Result = A + (2*A)" << endl;
-    result = A + (2.*A);
-    result.print();
+    cout << "A";
+    A.print();
+
+    cout << "A[0][1] = " << A[0][1] << endl;
+    cout << "A[1][1] = " << A[1][1] << endl << endl;
+
+    cout << "iResult = A + (2*A)" << endl;
+    iResult = A + (2*A);
+    iResult.print();
+
+    cout << "B";
+    B.print();
 
     cout << "result = B - B" << endl;
     result = B - B;

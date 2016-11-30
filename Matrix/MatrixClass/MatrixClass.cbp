@@ -34,8 +34,8 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="MatrixTest.cpp" />
-		<Unit filename="include/Matrix.h" />
+		<Unit filename="include/matrix.h" />
+		<Unit filename="matrixtest.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
