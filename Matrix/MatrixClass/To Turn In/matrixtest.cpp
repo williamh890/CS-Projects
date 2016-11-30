@@ -1,4 +1,5 @@
 //matrixtest.h
+//William Horn
 //11.29.2016
 //Demo of matrix class features
 //Group: William Horn, Orion Lust, Kyle Tam
