@@ -1,4 +1,5 @@
 //matrixtest.h
+//William Horn
 //11.29.2016
 //Demo of matrix class features
 //Group: William Horn, Orion Lust, Kyle Tam
@@ -10,6 +11,8 @@ using std::cout;
 using std::endl;
 #include <vector>
 using std::vector;
+#include <string>
+using std::string;
 
 
 int main()
@@ -105,8 +108,8 @@ int main()
 
     B.resize(4,4);
 
-    cout << "B.addCols(r1,r2,r1,r1,r1,r2)" << endl;
-    B.addCols(r1,r2,r1,r1,r1,r2);
+    cout << "B.addCols(r1,r2,r1,r1,r1,r2,r2,r1,r1,r1,r2,r2,r1,r1,r1,r2)" << endl;
+    B.addCols(r1,r2,r1,r1,r1,r2,r2,r1,r1,r1,r2,r2,r1,r1,r1,r2);
     B.print();
 
     B.resize(4,4);

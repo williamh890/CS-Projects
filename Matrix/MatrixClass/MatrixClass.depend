@@ -24,7 +24,7 @@
 	<iostream>
 	"include\Matrix.h"
 
-1480468723 c:\users\william\desktop\spring 2016\cs 201\project\wbhorn\matrix\matrixclass\include\matrix.h
+1480663863 c:\users\william\desktop\spring 2016\cs 201\project\wbhorn\matrix\matrixclass\include\matrix.h
 	<vector>
 	<iostream>
 	<cassert>
@@ -33,6 +33,8 @@
 	<iomanip>
 	<sstream>
 	<string>
+	<fstream>
+	<sstream>
 
 1480362337 source:c:\users\wbhorn\desktop\new folder\projects\matrix\matrixclass\main.cpp
 	<iostream>
@@ -62,9 +64,11 @@
 	<sstream>
 	<string>
 
-1480469464 source:c:\users\william\desktop\spring 2016\cs 201\project\wbhorn\matrix\matrixclass\matrixtest.cpp
+1480663862 source:c:\users\william\desktop\spring 2016\cs 201\project\wbhorn\matrix\matrixclass\matrixtest.cpp
+	"include\matrix.h"
 	<iostream>
-	"include\Matrix.h"
+	<vector>
+	<string>
 
 1480478363 source:c:\users\william\desktop\cs_201\wbhorn\matrix\matrixclass\matrixtest.cpp
 	"include\matrix.h"

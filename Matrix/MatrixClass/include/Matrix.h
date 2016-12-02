@@ -1,4 +1,5 @@
 //matrix.h
+//William Horn
 //10.29.2016
 //Matrix class
 //Group: William Horn, Orion Lust, Kyle Tam
@@ -14,8 +15,25 @@
 #include <iomanip>   //setprecision
 #include <sstream>   //ostringstream
 #include <string>    //string
+#include <fstream>   //ifstream
+#include <sstream>   //istringstream
 
 #define ZERO_LIMIT (1e-10)
+
+/*
+    I had never done a project this big before, and I soon realized that
+    the choices made in the beginning of the class's creation greatly
+    affect the later functions. If I were to make the class I would have made
+    _matrixVals, _rows, and _cols protected and used functions to access them.
+    Also, I need to find a way to hide the internal sub-functions used in the calculation
+    functions from the outside world.
+
+    This project is in no way complete, and as I am quickly finding out
+    with coding, they never are, but you have to call it somewhere so...
+    here you go.
+
+    Enjoy!
+*/
 
 template <typename T>
 class Matrix
@@ -29,6 +47,7 @@ class Matrix
         Matrix() = default;
         Matrix(unsigned int r,unsigned int c, T val = 0);
         Matrix(std::vector<std::vector<T> > data);
+        Matrix(std::string file);
 
         virtual ~Matrix() = default; //DTOR
         //////////////Operations////////////////////
@@ -91,6 +110,58 @@ Matrix<T>::Matrix(std::vector<std::vector<T> > data) : _matrixVals(data)
 {
     _rows = (int)_matrixVals.size();
     _cols = (int)_matrixVals[0].size();
+}
+//Quick and dirty version, need to add error checking and on everything
+//just to make a quick input method for the presentation
+template <typename T>
+Matrix<T>::Matrix(std::string file)
+{
+
+    //Open file
+    std::ifstream matrixFile(file);
+
+    //assert(matrixFile);
+    bool first = true;
+
+    std::vector<std::vector<T> > fileVals;
+
+    while(true)
+    {
+        //Row to be totaled up
+        std::vector<T> row;
+        //String for input
+        std::string line;
+
+        std::getline(matrixFile, line);
+
+        if(first)
+        {
+            assert(line == "Matrix");
+            first = false;
+            continue;
+        }
+        //Exit file reading
+        if(!matrixFile && matrixFile.eof()) break;
+
+        std::istringstream in(line);
+        //Adds up the row
+        while(true)
+        {
+            T element;
+            in >> element;
+            if(!in) break;
+            else
+            {
+                row.push_back(element);
+            }
+        }
+
+        this->_matrixVals.push_back(row);
+    }
+
+    _rows = (int)_matrixVals.size();
+    _cols = (int)_matrixVals[0].size();
+
 }
 /////////////////////////////////////////////////////////////
 
