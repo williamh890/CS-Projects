@@ -597,9 +597,21 @@ Matrix<T> invert(Matrix<T> A)
 
 //Find the det of a 2x2 matrix
 template <typename T>
-T det2_2(Matrix<T> A)
+inline T det2_2(Matrix<T> A)
 {
     return ((A[0][0] * A[1][1]) - (A[0][1] * A[1][0]));
+}
+
+template <typename T>
+inline T det3_3(Matrix<T> A)
+{
+    return(((A[0][0] * A[1][1] * A[2][2]) +
+             A[0][1] * A[1][2] * A[2][0] +
+             A[0][2] * A[1][0] * A[2][1]) -
+
+             (A[0][0] * A[1][2] * A[2][1] +
+              A[0][1] * A[1][1] * A[2][2] +
+              A[0][2] * A[1][0] * A[2][0]));
 }
 
 //Matrix class but with a cofactor value associated with it
@@ -664,7 +676,7 @@ T sum_cofactor_dets(std::vector<Cofactor<T> > cofactors)
     //Run through all the cofactors
     for(int i = 0; i < (int)cofactors.size(); ++i)
     {
-        sum += cofactors[i].cofactorValue * det2_2(cofactors[i]);
+        sum += cofactors[i].cofactorValue * det3_3(cofactors[i]);
     }
     return sum;
 }
@@ -686,9 +698,13 @@ T det(Matrix<T> A)
     std::vector<Cofactor<T> > oldCofactors(cofactor_matrix(A));
     std::vector<Cofactor<T> > newCofactors;
 
+    std::cout << "working..." << std::endl;
+
     //Break down until all the cofactors are 2X2
-    while(oldCofactors[0]._rows != 2)
+    while(oldCofactors[0]._rows != 3)
     {
+        std::cout << "  current cofactor size: " << oldCofactors[0]._rows << std::endl
+                  << "     number of cofactors: " << oldCofactors.size() << std::endl;
         //Runs through all the cofactors and cofactors them
         for(int i = 0; i < (int)oldCofactors.size(); ++i)
         {
