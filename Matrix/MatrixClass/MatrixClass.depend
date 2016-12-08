@@ -40,7 +40,7 @@
 	<iostream>
 	"include\Matrix.h"
 
-1480536398 c:\users\wbhorn\desktop\new folder\projects\matrix\matrixclass\include\matrix.h
+1480710791 c:\users\wbhorn\desktop\new folder\projects\matrix\matrixclass\include\matrix.h
 	<vector>
 	<iostream>
 	<cassert>
@@ -49,12 +49,14 @@
 	<iomanip>
 	<sstream>
 	<string>
+	<fstream>
+	<sstream>
 
 1480206609 source:c:\users\william\desktop\cs_201\wbhorn\matrix\matrixclass\main.cpp
 	<iostream>
 	"include\Matrix.h"
 
-1480478462 c:\users\william\desktop\cs_201\wbhorn\matrix\matrixclass\include\matrix.h
+1480699591 c:\users\william\desktop\cs_201\wbhorn\matrix\matrixclass\include\matrix.h
 	<vector>
 	<iostream>
 	<cassert>
@@ -63,6 +65,8 @@
 	<iomanip>
 	<sstream>
 	<string>
+	<fstream>
+	<sstream>
 
 1480663862 source:c:\users\william\desktop\spring 2016\cs 201\project\wbhorn\matrix\matrixclass\matrixtest.cpp
 	"include\matrix.h"
@@ -70,13 +74,15 @@
 	<vector>
 	<string>
 
-1480478363 source:c:\users\william\desktop\cs_201\wbhorn\matrix\matrixclass\matrixtest.cpp
+1480666962 source:c:\users\william\desktop\cs_201\wbhorn\matrix\matrixclass\matrixtest.cpp
 	"include\matrix.h"
 	<iostream>
 	<vector>
+	<string>
 
-1480534410 source:c:\users\wbhorn\desktop\new folder\projects\matrix\matrixclass\matrixtest.cpp
+1480710914 source:c:\users\wbhorn\desktop\new folder\projects\matrix\matrixclass\matrixtest.cpp
 	"include\matrix.h"
 	<iostream>
 	<vector>
+	<string>
 

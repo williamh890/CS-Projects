@@ -20,21 +20,6 @@
 
 #define ZERO_LIMIT (1e-10)
 
-/*
-    I had never done a project this big before, and I soon realized that
-    the choices made in the beginning of the class's creation greatly
-    affect the later functions. If I were to make the class I would have made
-    _matrixVals, _rows, and _cols protected and used functions to access them.
-    Also, I need to find a way to hide the internal sub-functions used in the calculation
-    functions from the outside world.
-
-    This project is in no way complete, and as I am quickly finding out
-    with coding, they never are, but you have to call it somewhere so...
-    here you go.
-
-    Enjoy!
-*/
-
 template <typename T>
 class Matrix
 {
@@ -56,6 +41,15 @@ class Matrix
         Matrix& operator-=(const Matrix & b);
         Matrix& operator*=(T scalar);
         Matrix<T>& operator*=(Matrix<T> & B);
+
+    /************************************************************
+     *  Matrix<T>& operator+(Matrix<T> a, const Matrix<T> & b)  *
+     *  Matrix<T>& operator-(Matrix<T> a, const Matrix<T> & b)  *
+     *  Matrix<T>& operator*(Matrix<T> a, T scalar)             *
+     *  Matrix<T>& operator*(T scalar, Matrix<T> a)             *
+     *  Matrix<T>& operator*(Matrix<T> a, Matrix<T> b)          *
+     ************************************************************/
+
 
         ///////////////////Utility//////////////////
         void resize(int newRowSize, int newColSize, T fillvalue = 0);
@@ -79,12 +73,12 @@ class Matrix
         std::pair<unsigned int, unsigned int> size();
 
         //////////Calculation Functions/////////////
-   /*********************************************************
-    *  Matrix<T> rref(Matrix<T> A, bool debug = false);     *
-    *  Matrix<T> invert(Matrix<T> A)                        *
-    *  T det(Matrix<T> A)                                   *
-    *  Matrix<T> transpose(Matrix<T> A)                     *
-    *********************************************************/
+   /*****************************************************
+    *  Matrix<T> rref(Matrix<T> A, bool debug = false) *
+    *  Matrix<T> invert(Matrix<T> A)                    *
+    *  T det(Matrix<T> A)                               *
+    *  Matrix<T> transpose(Matrix<T> A)                 *
+    *****************************************************/
 
 }; //END MATRIX
 ///////////////////////CTORS/////////////////////////
@@ -603,9 +597,21 @@ Matrix<T> invert(Matrix<T> A)
 
 //Find the det of a 2x2 matrix
 template <typename T>
-T det2_2(Matrix<T> A)
+inline T det2_2(Matrix<T> A)
 {
     return ((A[0][0] * A[1][1]) - (A[0][1] * A[1][0]));
+}
+
+template <typename T>
+inline T det3_3(Matrix<T> A)
+{
+    return(((A[0][0] * A[1][1] * A[2][2]) +
+             A[0][1] * A[1][2] * A[2][0] +
+             A[0][2] * A[1][0] * A[2][1]) -
+
+             (A[0][0] * A[1][2] * A[2][1] +
+              A[0][1] * A[1][1] * A[2][2] +
+              A[0][2] * A[1][0] * A[2][0]));
 }
 
 //Matrix class but with a cofactor value associated with it
@@ -670,7 +676,7 @@ T sum_cofactor_dets(std::vector<Cofactor<T> > cofactors)
     //Run through all the cofactors
     for(int i = 0; i < (int)cofactors.size(); ++i)
     {
-        sum += cofactors[i].cofactorValue * det2_2(cofactors[i]);
+        sum += cofactors[i].cofactorValue * det3_3(cofactors[i]);
     }
     return sum;
 }
@@ -692,9 +698,13 @@ T det(Matrix<T> A)
     std::vector<Cofactor<T> > oldCofactors(cofactor_matrix(A));
     std::vector<Cofactor<T> > newCofactors;
 
+    std::cout << "working..." << std::endl;
+
     //Break down until all the cofactors are 2X2
-    while(oldCofactors[0]._rows != 2)
+    while(oldCofactors[0]._rows != 3)
     {
+        std::cout << "  current cofactor size: " << oldCofactors[0]._rows << std::endl
+                  << "     number of cofactors: " << oldCofactors.size() << std::endl;
         //Runs through all the cofactors and cofactors them
         for(int i = 0; i < (int)oldCofactors.size(); ++i)
         {
