@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1481315870 source:c:\users\wbhorn\desktop\new folder\consol_physics\v2\consol_physics\main.cpp
+	<iostream>
+	<fstream>
+	<windows.h>
+
