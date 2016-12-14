@@ -4,6 +4,8 @@ using std::endl;
 #include <fstream>
 using std::ofstream;
 #include <windows.h>
+#include <string>
+using std::string;
 
 #define Y_MAX 50
 #define X_MAX 100
@@ -32,19 +34,28 @@ public:
     }
 };
 
-void worldPrint(Particle & p)
+string world(Particle & p)
 {
-    for(int i = 0; i < Y_MAX; ++i)
+    string frame = "";
+    for(int y = 0; y < Y_MAX; ++y)
     {
-        if(p._Yposition == i) cout << "x";
-        else cout << endl;
+        for(int x = 0; x < X_MAX; ++x)
+        {
+            if(p._Yposition == y && p._Xposition == x)
+            {
+                frame += "x";
+            }
+            else frame += " ";
+        }
+        frame += "\n";
     }
+    return frame;
 }
 
 
 int main()
 {
-    bool print_to_file = true;
+    bool print_to_file = false;
     ofstream outFile;
 
     if(print_to_file)
@@ -59,6 +70,7 @@ int main()
 
     Particle p(10, 1, 0, -1);
     double prev_V = p._velocity;
+    string frame = "";
 
     if(print_to_file) outFile << p._velocity << ", " << p._Yposition << endl;
     while(true)
@@ -81,7 +93,7 @@ int main()
         if(GetAsyncKeyState(VK_RIGHT)) p._Xposition--;
 
         system("cls");
-        worldPrint(p);
+        world(p, frame);
         if(print_to_file) outFile << p._velocity << ", " << p._Yposition << endl;
         Sleep(50);
 
