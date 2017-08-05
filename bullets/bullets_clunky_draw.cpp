@@ -1,5 +1,4 @@
 #include <iostream>
-#include <windows.h>
 #include <vector>
 #include <stdio.h>
 #include <time.h>
@@ -522,8 +521,6 @@ int main()
 
                 //////////////////RESET/EXIT////////////////
 
-                Sleep(CLOCK);
-                system("cls");
 
                 if(enemies.size() == 0) //If all dead
                 {
@@ -542,7 +539,6 @@ int main()
             if(!didYouWin) break;
             cout << "\n\n\n\n\t\tLEVEL " << level << " COMPLETE" << endl;
 
-            Sleep(1500);
             level++;
             prevPositions.clear();
 
@@ -576,7 +572,6 @@ int main()
             else
             {
                 cout << "\n\n    Invalide input, try again" << endl;
-                system("cls");
             }
         }
 
